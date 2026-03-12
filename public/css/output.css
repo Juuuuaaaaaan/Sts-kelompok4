@@ -1,0 +1,380 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+.body{
+    background: #ffffff;
+    overflow-x: hidden;
+}
+/* ===== Navbar ===== */
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 25px 80px;
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: 700;
+    color: #b52df0;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    gap: 55px;
+}
+
+nav a {
+    margin: 0 20px;
+    text-decoration: none;
+    font-weight: 600;
+    color: #b52df0;
+}
+
+nav a.active {
+    background: #b52df0;
+    color: #fff;
+    padding: 15px 60px;
+    border-radius: 16px;
+}
+
+.auth-btn {
+    display: flex;
+    gap: 15px;
+}
+
+.btn {
+    padding: 10px 26px;
+    border-radius: 30px;
+    border: 2px solid #b52df0;
+    background: transparent;
+    color: #b52df0;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn.primary {
+    background: #b52df0;
+    color: #fff;
+}
+
+/* ===== Hero ===== */
+.hero {
+    text-align: center;
+    position: relative;
+    bottom: 3rem;
+    margin-top: 80px;
+}
+
+.hero h1 {
+    font-size: 90px;
+    font-weight: 800;
+    color: #b52df0;
+}
+
+.hero p {
+    font-size: 30px;
+    color: #b085d6;
+    margin-top: 10px;
+}
+
+/* ===== Bottom Shape ===== */
+.bottom {
+    position: relative;
+    bottom: 2rem;
+    margin-top: 120px;
+    height: 300px;
+    width: auto;
+    background: #b52df0;
+    border-top-left-radius: 100% 200px;
+    border-top-right-radius: 100% 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.start-btn {
+    position: relative;
+    bottom: 3rem;
+    background: #fff;
+    color: #b52df0;
+    padding: 18px 55px;
+    border-radius: 40px;
+    font-size: 22px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.start-btn:hover {
+    transform: scale(1.05);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    header {
+        padding: 20px 30px;
+    }
+
+    .hero h1 {
+        font-size: 60px;
+    }
+
+    .hero p {
+        font-size: 20px;
+    }
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: #ffffff;
+    overflow-x: hidden;
+}
+
+/* ===== Navbar ===== */
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 25px 80px;
+    min-height: 90px; 
+}
+
+
+.logo {
+    font-size: 28px;
+    font-weight: 700;
+    color: #b52df0;
+}
+
+nav a {
+    margin: 0 20px;
+    text-decoration: none;
+    font-weight: 600;
+    color: #b52df0;
+}
+
+nav a.active {
+    background: #b52df0;
+    color: #fff;
+    padding: 15px 25px;
+    border-radius: 16px;
+}
+
+.auth-btn {
+    display: flex;
+    gap: 15px;
+}
+
+.btn {
+    padding: 10px 26px;
+    border-radius: 30px;
+    border: 2px solid #b52df0;
+    background: transparent;
+    color: #b52df0;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn.primary {
+    background: #b52df0;
+    color: #fff;
+}
+
+/* ===== Hero ===== */
+.hero {
+    text-align: center;
+    margin-top: 80px;
+}
+
+.hero h1 {
+    margin-top: 5rem;
+    font-size: 130px;
+    font-weight: 800;
+    color: #b52df0;
+}
+
+.hero p {
+    font-size: 30px;
+    color: #b085d6;
+    position: relative;
+    bottom: 3rem;
+}
+
+/* ===== Bottom Shape ===== */
+.bottom {
+    position: relative;
+    bottom: 8rem;
+    margin-top: 120px;
+    height: 320px;
+    background: #b52df0;
+    border-top-left-radius: 100% 500px;
+    border-top-right-radius: 100% 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.start-btn {
+    background: #fff;
+    color: #b52df0;
+    padding: 18px 55px;
+    border-radius: 40px;
+    font-size: 22px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.start-btn:hover {
+    transform: scale(1.05);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    header {
+        padding: 20px 30px;
+    }
+
+    .hero h1 {
+        font-size: 60px;
+    }
+
+    .hero p {
+        font-size: 20px;
+    }
+}
+
+/* ===== CLASS PAGE ===== */
+
+.class-page{
+margin-top:60px;
+display:flex;
+justify-content:center;
+}
+
+/* container */
+
+.class-container{
+width:75%;
+}
+
+/* lesson card */
+
+.class-card{
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+background:linear-gradient(90deg,#a019e6,#d14cf5);
+
+padding:35px 40px;
+margin-bottom:30px;
+
+color:white;
+
+border-radius:6px;
+
+transition:0.3s;
+
+}
+
+/* hover effect */
+
+.class-card:hover{
+
+transform:translateX(10px);
+
+box-shadow:0 10px 20px rgba(0,0,0,0.15);
+
+}
+
+/* lesson text */
+
+.class-card h3{
+font-weight:500;
+}
+
+/* start button */
+
+.class-btn{
+
+background:white;
+
+color:#a019e6;
+
+border:none;
+
+padding:10px 60px;
+
+font-size:16px;
+
+cursor:pointer;
+
+border-radius:4px;
+
+}
+
+.class-card{
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+background:linear-gradient(90deg,#a019e6,#d14cf5);
+
+padding:35px 40px;
+margin-bottom:30px;
+
+color:white;
+
+border-radius:6px;
+
+transition: all 0.3s ease;
+
+}
+
+.class-card:hover{
+
+transform: translateX(15px);
+
+box-shadow: 0 12px 25px rgba(0,0,0,0.2);
+
+}
+
+.class-card{
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.class-card:hover{
+    transform: translateX(15px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.2);
+}
+
+.nav-menu{
+position:relative;
+display:flex;
+gap:50px;
+}
+
+.nav-item{
+position:relative;
+text-decoration:none;
+color:#b52df0;
+font-weight:600;
+padding:12px 25px;
+z-index:2;
+}
