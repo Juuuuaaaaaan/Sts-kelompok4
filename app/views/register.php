@@ -2,43 +2,50 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fun Streak - Login</title>
+    <title>Register - Fun Streak</title>
     <link rel="stylesheet" href="../../public/css/output.css">
 </head>
-<body class=>
-
-</html>
+<body>
 
 <div class="login-page">
 
-    <!-- LEFT SIDE -->
+    <!-- LEFT -->
     <div class="login-left">
         <h1>Fun<br>Streak</h1>
         <p>Hard work by yourself</p>
     </div>
 
-    <!-- RIGHT SIDE -->
+    <!-- RIGHT -->
     <div class="login-right">
 
         <div class="login-card">
-            <h2>Welcome Back</h2>
+            <h2>Welcome</h2>
             <p>Please enter your details to enter</p>
 
             <form>
+
+                <label>Username</label>
+                <input type="text" placeholder="Input your Username">
+
                 <label>Email Address</label>
                 <input type="email" placeholder="Input your E-mail address">
 
                 <label>Password</label>
                 <input type="password" placeholder="Input your Password">
 
-                <small class="error">Password needs to contain at least 8 characters, 1 capital & 1 special letter</small>
+                <small class="error">
+                    Password needs to contain at least 8 characters, 1 symbol & 1 capital letter
+                </small>
 
-                <button type="submit">Log In</button>
+                <label>Confirm Password</label>
+                <input type="password" placeholder="Input your Confirm Password">
+
+                <button type="submit">Register</button>
 
                 <div class="register-link">
-                    Don't have any account? <a href="register.php">Create Account</a>
+                    Have an account? <a href="login.php">Login</a>
                 </div>
+
             </form>
         </div>
 
@@ -47,3 +54,4 @@
 </div>
 
 </body>
+</html>

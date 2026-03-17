@@ -8,13 +8,21 @@
 .body{
     background: #ffffff;
     overflow-x: hidden;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    font-family: 'Poppins', sans-serif;
 }
+
 /* ===== Navbar ===== */
 header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 25px 80px;
+    flex: 0 0 auto;
 }
 
 .logo {
@@ -67,8 +75,16 @@ nav a.active {
 .hero {
     text-align: center;
     position: relative;
-    bottom: 3rem;
+    bottom: 1rem;
     margin-top: 80px;
+}
+
+.hero{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .hero h1 {
@@ -86,7 +102,7 @@ nav a.active {
 /* ===== Bottom Shape ===== */
 .bottom {
     position: relative;
-    bottom: 2rem;
+    bottom: 1rem;
     margin-top: 120px;
     height: 300px;
     width: auto;
@@ -97,6 +113,15 @@ nav a.active {
     justify-content: center;
     align-items: center;
 }
+
+.bottom{
+    flex: 0 0 350px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 
 .start-btn {
     position: relative;
@@ -163,12 +188,20 @@ nav a {
     text-decoration: none;
     font-weight: 600;
     color: #b52df0;
+    padding: 12px 25px;
+    transition: all 0.3s ease;
 }
 
 nav a.active {
     background: #b52df0;
-    color: #fff;
-    padding: 15px 25px;
+    color: #ffffff;
+    padding: 12px 25px; 
+    border-radius: 16px;
+    transition: 0.3s;
+}
+
+nav a:hover {
+    background: rgba(181,45,240,0.1);
     border-radius: 16px;
 }
 
@@ -377,4 +410,148 @@ color:#b52df0;
 font-weight:600;
 padding:12px 25px;
 z-index:2;
+}
+
+.login-page{
+display:flex;
+height:100vh;
+font-family:'Poppins', sans-serif;
+background-color: #ffffff;
+}
+
+/* LEFT SIDE */
+.login-left{
+flex:0.6;
+background:linear-gradient(180deg,#c73fff,#8c00ff);
+color:rgb(255, 255, 255);
+
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:flex-start; 
+padding-left:140px; 
+border-top-right-radius:200px;
+border-bottom-right-radius:200px;
+}
+
+.login-left h1{
+font-size:100px;
+font-weight:800;
+text-align:left;
+line-height: 90%;
+}
+
+.login-left p{
+margin-top:10px;
+font-size:25px;
+opacity:0.9;
+}
+
+/* RIGHT SIDE */
+.login-right{
+flex:1;
+display:flex;
+justify-content:center;
+align-items:center;
+background:#ffffff;
+}
+
+/* CARD */
+.login-card{
+background:white;
+padding:40px;
+width:380px;
+
+border-radius:20px;
+box-shadow:0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.login-card h2{
+color:#b52df0;
+text-align:center;
+}
+
+.login-card p{
+text-align:center;
+margin-bottom:20px;
+color:#666;
+}
+
+/* FORM */
+.login-card label{
+font-size:14px;
+margin-top:10px;
+display:block;
+}
+
+.login-card input{
+width:100%;
+padding:12px;
+margin-top:5px;
+margin-bottom:10px;
+
+border-radius:20px;
+border:none;
+background:#eee;
+}
+
+/* ERROR */
+.error{
+font-size:12px;
+color:red;
+}
+
+/* BUTTON */
+.login-card button{
+width:100%;
+margin-top:15px;
+
+padding:12px;
+border:none;
+
+background:linear-gradient(90deg,#c73fff,#8c00ff);
+color:white;
+
+border-radius:25px;
+font-weight:600;
+
+cursor:pointer;
+transition:0.3s;
+}
+
+.login-card button:hover{
+transform:scale(1.03);
+}
+
+/* REGISTER */
+.register-link{
+margin-top:15px;
+text-align:center;
+font-size:13px;
+}
+
+.register-link a{
+color:#b52df0;
+text-decoration:none;
+font-weight:600;
+}
+
+.login-card{
+animation: fadeUp 0.6s ease;
+}
+
+@keyframes fadeUp{
+from{
+opacity:0;
+transform:translateY(30px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
+.login-left{
+border-top-right-radius:400px;
+border-bottom-right-radius:400px;
 }

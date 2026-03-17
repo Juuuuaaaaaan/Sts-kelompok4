@@ -22,8 +22,12 @@
 </nav>
 
 <div class="auth-btn">
-<button class="btn primary">Register</button>
-<button class="btn">Log In</button>
+    <a href="/app/views/register.php">
+        <button class="btn primary">Register</button>
+    </a>
+    <a href="/app/views/login.php">
+        <button class="btn">Log In</button>
+    </a>
 </div>
 
 </header>
