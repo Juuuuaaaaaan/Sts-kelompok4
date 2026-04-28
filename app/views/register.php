@@ -33,10 +33,6 @@
                 <label>Password</label>
                 <input type="password" placeholder="Input your Password">
 
-                <small class="error">
-                    Password needs to contain at least 8 characters, 1 symbol & 1 capital letter
-                </small>
-
                 <label>Confirm Password</label>
                 <input type="password" placeholder="Input your Confirm Password">
 

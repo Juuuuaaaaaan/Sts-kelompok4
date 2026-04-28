@@ -495,12 +495,6 @@ border:none;
 background:#eee;
 }
 
-/* ERROR */
-.error{
-font-size:12px;
-color:red;
-}
-
 /* BUTTON */
 .login-card button{
 width:100%;
