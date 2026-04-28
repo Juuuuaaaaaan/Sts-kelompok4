@@ -422,7 +422,7 @@ background-color: #ffffff;
 /* LEFT SIDE */
 .login-left{
 flex:0.6;
-background:linear-gradient(180deg,#c73fff,#8c00ff);
+background:#b52df0;
 color:rgb(255, 255, 255);
 
 display:flex;
@@ -503,7 +503,7 @@ margin-top:15px;
 padding:12px;
 border:none;
 
-background:linear-gradient(90deg,#c73fff,#8c00ff);
+background:#b52df0;
 color:white;
 
 border-radius:25px;
