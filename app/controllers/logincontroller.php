@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-require_once dirname(__DIR__, 2) . '/db.php';
+require_once dirname(__DIR__) . '/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
