@@ -138,6 +138,31 @@ if (session_status() === PHP_SESSION_NONE) {
         </div>
     </main>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const links = document.querySelectorAll('a');
+            links.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    // Cek agar efek tidak menimpa link tab baru atau link anchor (#)
+                    if (this.hostname === window.location.hostname && this.target !== '_blank' && !this.getAttribute('href').startsWith('#')) {
+                        e.preventDefault();
+                        const destination = this.href;
+                        document.body.classList.add('page-exit');
+                        setTimeout(() => {
+                            window.location.href = destination;
+                        }, 150);
+                    }
+                });
+            });
+        });
+ 
+        // Trik untuk memperbaiki layar putih saat tombol "Back" ditekan
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                document.body.classList.remove('page-exit');
+            }
+        });
+    </script>
 
 </body>
 </html>
