@@ -131,7 +131,7 @@ if (session_status() === PHP_SESSION_NONE) {
         </div>
         
         <div class="absolute bottom-0 w-full h-[40%] bg-[#b829e3] rounded-t-[100%] flex justify-center shadow-[0_-15px_30px_rgba(184,41,227,0.15)] z-20">
-            <a href="app/views/class.php" class="absolute -top-7 bg-white text-[#b829e3] text-2xl font-bold px-14 py-4 rounded-full shadow-[0_10px_25px_rgba(184,41,227,0.4)] hover:scale-110 transition-all duration-300">
+            <a href="/class" class="absolute -top-7 bg-white text-[#b829e3] text-2xl font-bold px-14 py-4 rounded-full shadow-[0_10px_25px_rgba(184,41,227,0.4)] hover:scale-110 transition-all duration-300">
                 Start Now
             </a>
         </div>
