@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../db.php';
+require_once '../core/Database.php';
 
 if (!isset($_SESSION['username'])) {
     header("Location: login.php");
@@ -15,16 +15,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $pdo->beginTransaction();
 
-        // 1. Simpan data kelas baru ke tabel classes
         $stmt = $pdo->prepare("INSERT INTO classes (nama_kelas, deskripsi, created_by) VALUES (?, ?, ?)");
         $stmt->execute([$nama_kelas, $deskripsi, $username]);
         
-        $class_id = $pdo->lastInsertId(); // Ambil ID kelas yang baru saja dibuat
+        $class_id = $pdo->lastInsertId();
 
-        // 2. Simpan semua soal ke tabel questions
         $stmt_q = $pdo->prepare("INSERT INTO questions (class_id, question_text, option_a, option_b, option_c, option_d, correct_option) VALUES (?, ?, ?, ?, ?, ?, ?)");
         
-        // Loop untuk menyimpan setiap soal yang dikirim dari form
         foreach ($_POST['question'] as $index => $question) {
             $stmt_q->execute([
                 $class_id,
@@ -142,7 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         document.body.classList.add('page-exit');
                         setTimeout(() => {
                             window.location.href = destination;
-                        }, 400); // 400ms menyesuaikan animasi CSS
+                        }, 400);
                     }
                 });
             });

@@ -1,8 +1,7 @@
 <?php
 session_start();
-require_once '../db.php';
+require_once '../core/Database.php';
 
-// Pastikan user sudah login dan mengakses via metode POST dari play_quiz.php
 if (!isset($_SESSION['username']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
     header("Location: class.php");
     exit();
@@ -10,7 +9,7 @@ if (!isset($_SESSION['username']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $username = $_SESSION['username'];
 $class_id = $_POST['class_id'] ?? null;
-$user_answers = $_POST['answer'] ?? []; // Menyimpan jawaban user [id_soal => jawaban]
+$user_answers = $_POST['answer'] ?? [];
 
 if (!$class_id) {
     die("Data kelas tidak valid.");
@@ -21,35 +20,27 @@ $total_questions = 0;
 $points_earned = 0;
 
 try {
-    // 1. Ambil Kunci Jawaban dari database berdasarkan class_id
     $stmt = $pdo->prepare("SELECT id, correct_option FROM questions WHERE class_id = ?");
     $stmt->execute([$class_id]);
     $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $total_questions = count($questions);
 
-    // 2. Cocokkan jawaban user dengan kunci jawaban
     foreach ($questions as $q) {
         $q_id = $q['id'];
-        // Jika jawaban user ada dan sama dengan correct_option di database
         if (isset($user_answers[$q_id]) && $user_answers[$q_id] === $q['correct_option']) {
             $correct_count++;
         }
     }
 
-    // 3. Kalkulasi Poin (Misal: 1 jawaban benar = 100 Poin)
     $points_earned = $correct_count * 100;
 
-    // 4. Cek apakah user sudah pernah menyelesaikan kelas ini sebelumnya
-    // Kita pastikan user tidak bisa curang main kelas yang sama berkali-kali untuk nge-farm poin
     $stmt_check = $pdo->prepare("SELECT id FROM completed_classes WHERE username = ? AND class_id = ?");
     $stmt_check->execute([$username, $class_id]);
     
     if (!$stmt_check->fetch()) {
-        // Jika belum pernah main, simpan ke riwayat dan tambahkan poinnya
         $stmt_insert = $pdo->prepare("INSERT INTO completed_classes (username, class_id, points_earned) VALUES (?, ?, ?)");
         $stmt_insert->execute([$username, $class_id, $points_earned]);
 
-        // Ingat: sesuai percakapan sebelumnya, kolom kamu bernama 'points'
         $stmt_update = $pdo->prepare("UPDATE users SET points = points + ? WHERE username = ?");
         $stmt_update->execute([$points_earned, $username]);
     }
@@ -72,7 +63,6 @@ try {
             font-family: 'Outfit', sans-serif; 
             background-color: #b829e3; 
         }
-        /* Animasi Pop-up untuk skor */
         @keyframes popIn {
             0% { transform: scale(0.5); opacity: 0; }
             80% { transform: scale(1.1); opacity: 1; }
@@ -162,7 +152,7 @@ try {
                         document.body.classList.add('page-exit');
                         setTimeout(() => {
                             window.location.href = destination;
-                        }, 400); // 400ms menyesuaikan animasi CSS
+                        }, 400);
                     }
                 });
             });

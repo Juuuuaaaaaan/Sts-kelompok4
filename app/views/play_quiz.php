@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../db.php';
+require_once '../core/Database.php';
 
 if (!isset($_SESSION['username'])) {
     header("Location: login.php");
@@ -43,47 +43,43 @@ try {
     <style>
         body { 
             font-family: 'Outfit', sans-serif; 
-            background-color: #b829e3; /* Warna dasar ungu utama */
-            overflow: hidden; /* Mencegah scroll agar terasa seperti app */
+            background-color: #b829e3; 
+            overflow: hidden;
         }
         
-        /* Lengkungan di bagian bawah */
         .bottom-curve {
             position: fixed;
             bottom: -10vh;
             left: -20vw;
             right: -20vw;
             height: 40vh;
-            background-color: #c946f2; /* Warna ungu sedikit lebih terang */
+            background-color: #c946f2;
             border-radius: 50% 50% 0 0;
             z-index: -1;
         }
 
         .hidden-question { display: none !important; }
         
-        /* Efek klik pada kotak jawaban */
         .option-btn { transition: transform 0.1s ease-in-out; }
         .option-btn:active { transform: scale(0.95); }
     </style>
 <style>
         body {
-            /* Saat halaman baru dimuat: muncul dari bawah meluncur ke posisi asli */
             animation: slideInPage 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
         
         body.page-exit {
-            /* Saat link diklik: meluncur ke atas sambil menghilang */
             animation: slideOutPage 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
         @keyframes slideInPage {
             0% { 
                 opacity: 0; 
-                transform: translateY(20px); /* Mulai dari 20px di bawah */
+                transform: translateY(20px); 
             }
             100% { 
                 opacity: 1; 
-                transform: translateY(0); /* Kembali ke posisi semula */
+                transform: translateY(0); 
             }
         }
 
@@ -94,7 +90,7 @@ try {
             }
             100% { 
                 opacity: 0; 
-                transform: translateY(-20px); /* Meluncur 20px ke atas */
+                transform: translateY(-20px); 
             }
         }
     </style>
@@ -192,7 +188,7 @@ try {
     <script>
         let currentQuestion = 0;
         const totalQuestions = <?= count($questions) ?>;
-        let timeLeft = 30; // 30 detik sesuai gambar
+        let timeLeft = 30; 
         let timerInterval;
 
         function startTimer(index) {
@@ -218,7 +214,6 @@ try {
         function nextQuestion(index) {
             clearInterval(timerInterval);
             
-            // Jeda singkat agar user melihat efek kotak terpilih
             setTimeout(() => {
                 const currentBlock = document.getElementById(`q-block-${index}`);
                 const nextBlock = document.getElementById(`q-block-${index + 1}`);
@@ -229,18 +224,15 @@ try {
                     currentQuestion++;
                     startTimer(currentQuestion);
                 } else {
-                    // Submit otomatis jika sudah di soal terakhir
                     document.getElementById('quiz-form').submit();
                 }
             }, 300); // delay 0.3 detik
         }
 
         function autoSkip(index) {
-            // Langsung pindah jika waktu habis (tidak memaksakan memilih jawaban)
             nextQuestion(index);
         }
 
-        // Mulai timer untuk soal pertama saat halaman dimuat
         if (totalQuestions > 0) {
             startTimer(0);
         }
@@ -254,10 +246,8 @@ try {
                         e.preventDefault();
                         const destination = this.href;
                         
-                        // Tambahkan animasi keluar
                         document.body.classList.add('page-exit');
                         
-                        // Tunggu animasi hampir selesai, lalu pindah halaman
                         setTimeout(() => {
                             window.location.href = destination;
                         }, 250); 

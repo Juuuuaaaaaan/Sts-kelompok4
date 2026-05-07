@@ -1,34 +1,5 @@
-<?php
-session_start();
-// Pastikan path ke db.php benar
-require_once dirname(__DIR__) . '/db.php'; 
-
-if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
-    exit();
-}
-
-$username = $_SESSION['username'];
-$total_points = 0;
-
-try {
-    // Ingat: ganti 'streak' jika nama kolom di databasemu adalah 'points'
-    $stmt = $pdo->prepare("SELECT points FROM users WHERE username = ?");
-    $stmt->execute([$username]);
-    $user = $stmt->fetch();
-    
-    if ($user) {
-        $total_points = $user['points'];
-    }
-} catch(PDOException $e) {
-    die("Error mengambil data poin: " . $e->getMessage());
-}
-
-// Fitur UI Level & Progress
-$level = floor($total_points / 100) + 1;
-$next_level_points = $level * 100;
-$progress_percent = ($total_points % 100); 
-if ($progress_percent == 0 && $total_points > 0) $progress_percent = 100;
+<?php 
+    $current_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); 
 ?>
 
 <!DOCTYPE html>
@@ -43,23 +14,21 @@ if ($progress_percent == 0 && $total_points > 0) $progress_percent = 100;
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
         body {
-            /* Saat halaman baru dimuat: muncul dari bawah meluncur ke posisi asli */
             animation: slideInPage 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
         
         body.page-exit {
-            /* Saat link diklik: meluncur ke atas sambil menghilang */
             animation: slideOutPage 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
         @keyframes slideInPage {
             0% { 
                 opacity: 0; 
-                transform: translateY(20px); /* Mulai dari 20px di bawah */
+                transform: translateY(20px); 
             }
             100% { 
                 opacity: 1; 
-                transform: translateY(0); /* Kembali ke posisi semula */
+                transform: translateY(0);
             }
         }
 
@@ -70,39 +39,49 @@ if ($progress_percent == 0 && $total_points > 0) $progress_percent = 100;
             }
             100% { 
                 opacity: 0; 
-                transform: translateY(-20px); /* Meluncur 20px ke atas */
+                transform: translateY(-20px); 
             }
         }
     </style>
 </head>
 <body class="bg-[#f9f9f9] min-h-screen flex flex-col font-['Outfit']">
 
-<?php $current_page = basename($_SERVER['PHP_SELF']); ?>
-    <nav class="flex justify-between items-center p-6 bg-white shadow-sm z-10 sticky top-0">
-        <a href="../../index.php" class="text-3xl font-bold text-[#b829e3] tracking-wide cursor-pointer hover:scale-105 transition-transform duration-300">Fun Streak</a>
+<?php 
+        // Mengambil path URL saat ini (contoh: '/', '/class', atau '/streak')
+        $current_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); 
+    ?>
+    <nav class="flex items-center p-6 bg-white shadow-sm z-10 sticky top-0 w-full">
+        
+        <div class="flex-1">
+            <a href="/" class="text-3xl font-bold text-[#b829e3] tracking-wide cursor-pointer hover:scale-105 transition-transform duration-300 inline-block">Fun Streak</a>
+        </div>
         
         <div class="flex gap-10 text-gray-500 font-semibold items-center text-lg hidden md:flex">
-            <a href="../../index.php" class="relative group <?= $current_page == 'index.php' ? 'text-[#b829e3]' : 'hover:text-[#b829e3]' ?> transition-colors duration-300">
+            <a href="/" class="relative group <?= ($current_path == '/' || $current_path == '/index.php') ? 'text-[#b829e3]' : 'hover:text-[#b829e3]' ?> transition-colors duration-300">
                 Home
-                <span class="absolute -bottom-1 left-0 h-[3px] rounded-full bg-[#b829e3] transition-all duration-300 <?= $current_page == 'index.php' ? 'w-full' : 'w-0 group-hover:w-full' ?>"></span>
+                <span class="absolute -bottom-1 left-0 h-[3px] rounded-full bg-[#b829e3] transition-all duration-300 <?= ($current_path == '/' || $current_path == '/index.php') ? 'w-full' : 'w-0 group-hover:w-full' ?>"></span>
             </a>
 
-            <a href="class.php" class="relative group <?= $current_page == 'class.php' ? 'text-[#b829e3]' : 'hover:text-[#b829e3]' ?> transition-colors duration-300">
+            <a href="/class" class="relative group <?= $current_path == '/class' ? 'text-[#b829e3]' : 'hover:text-[#b829e3]' ?> transition-colors duration-300">
                 Class
-                <span class="absolute -bottom-1 left-0 h-[3px] rounded-full bg-[#b829e3] transition-all duration-300 <?= $current_page == 'class.php' ? 'w-full' : 'w-0 group-hover:w-full' ?>"></span>
+                <span class="absolute -bottom-1 left-0 h-[3px] rounded-full bg-[#b829e3] transition-all duration-300 <?= $current_path == '/class' ? 'w-full' : 'w-0 group-hover:w-full' ?>"></span>
             </a>
 
-            <a href="streak.php" class="relative group <?= $current_page == 'streak.php' ? 'text-[#b829e3]' : 'hover:text-[#b829e3]' ?> transition-colors duration-300">
+            <a href="/streak" class="relative group <?= $current_path == '/streak' ? 'text-[#b829e3]' : 'hover:text-[#b829e3]' ?> transition-colors duration-300">
                 Streak
-                <span class="absolute -bottom-1 left-0 h-[3px] rounded-full bg-[#b829e3] transition-all duration-300 <?= $current_page == 'streak.php' ? 'w-full' : 'w-0 group-hover:w-full' ?>"></span>
+                <span class="absolute -bottom-1 left-0 h-[3px] rounded-full bg-[#b829e3] transition-all duration-300 <?= $current_path == '/streak' ? 'w-full' : 'w-0 group-hover:w-full' ?>"></span>
             </a>
         </div>
 
-        <div class="flex gap-5 items-center">
-            <div class="h-10 w-10 rounded-full bg-purple-200 flex items-center justify-center text-[#b829e3] font-bold text-xl uppercase">
-                <?= substr($_SESSION['username'], 0, 1) ?>
-            </div>
-            <a href="../controllers/logout.php" class="border-2 border-red-400 text-red-500 px-6 py-1.5 rounded-full font-semibold shadow-sm hover:bg-red-50 transition-all duration-300">Log Out</a>
+        <div class="flex-1 flex justify-end items-center gap-4">
+            <?php if (isset($_SESSION['username'])): ?>
+                <a href="/profile" class="h-10 w-10 rounded-full bg-purple-200 hover:bg-purple-300 hover:scale-105 flex items-center justify-center text-[#b829e3] font-bold text-xl uppercase shadow-sm transition-all duration-300 cursor-pointer" title="Go to Profile">
+                    <?= substr($_SESSION['username'], 0, 1) ?>
+                </a>
+            <?php else: ?>
+                <a href="/login" class="text-[#b829e3] font-bold hover:text-[#9b1ebf] px-4 py-2 transition-colors duration-300">Log In</a>
+                <a href="/register" class="bg-[#b829e3] hover:bg-[#9b1ebf] text-white px-8 py-2.5 rounded-full font-bold shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">Sign Up</a>
+            <?php endif; ?>
         </div>
     </nav>
 
@@ -175,10 +154,8 @@ if ($progress_percent == 0 && $total_points > 0) $progress_percent = 100;
                         e.preventDefault();
                         const destination = this.href;
                         
-                        // Tambahkan animasi keluar
                         document.body.classList.add('page-exit');
                         
-                        // Tunggu animasi hampir selesai, lalu pindah halaman
                         setTimeout(() => {
                             window.location.href = destination;
                         }, 250); 
