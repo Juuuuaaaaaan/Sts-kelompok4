@@ -26,5 +26,6 @@ $router->add('POST', '/class/{id}/complete', 'ClassController', 'complete');
 $router->add('GET', '/class/{id}/edit', 'ClassController', 'edit');
 $router->add('PUT', '/class/{id}', 'ClassController', 'update');
 $router->add('DELETE', '/class/{id}', 'ClassController', 'destroy');
+$router->add('POST', '/profile/update', 'ProfileController', 'update');
 
 $router->run();
