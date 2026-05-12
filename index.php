@@ -14,10 +14,13 @@ $router->add('POST', '/login', 'AuthController', 'loginPost');
 $router->add('GET', '/register', 'AuthController', 'registerView');
 $router->add('POST', '/register', 'AuthController', 'registerPost');
 $router->add('GET', '/logout', 'AuthController', 'logout');
+$router->add('GET', '/join_class', 'ClassController', 'join');
+$router->add('POST', '/join_class', 'ClassController', 'processJoin');
 
 $router->add('GET', '/', 'HomeController', 'index'); 
 $router->add('GET', '/profile', 'ProfileController', 'index'); 
 $router->add('GET', '/streak', 'StreakController', 'index'); 
+$router->add('GET', '/play_quiz', 'QuizController', 'play');
 
 $router->add('GET', '/class', 'ClassController', 'index'); 
 $router->add('GET', '/class/create', 'ClassController', 'create');

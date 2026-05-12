@@ -131,7 +131,7 @@
                 <h1 class="text-4xl font-black text-gray-800 mb-2">Join Game</h1>
                 <p class="text-gray-500 font-medium mb-8">Enter the Game PIN provided by your host.</p>
                 
-                <form action="join_class.php" method="POST" class="flex flex-col gap-4">
+                <form action="/join_class" method="POST" class="flex flex-col gap-4">
                     <input type="text" name="class_pin" placeholder="Game PIN" required autocomplete="off"
                            class="w-full text-center text-3xl font-black tracking-widest text-gray-800 placeholder-gray-300 bg-gray-50 border-4 border-gray-200 rounded-2xl py-5 focus:outline-none focus:border-[#b829e3] focus:bg-white transition-all <?= ($msg == 'invalid' || $msg == 'played') ? 'border-red-400 bg-red-50 shake-animation' : '' ?>">
                     <button type="submit" class="w-full bg-[#b829e3] hover:bg-[#9b1ebf] text-white font-black text-2xl py-5 rounded-2xl shadow-[0_6px_0_#8519a3] hover:shadow-[0_2px_0_#8519a3] hover:translate-y-1 transition-all">
@@ -180,7 +180,7 @@
                             <p class="text-gray-400 text-xs mb-4">PIN: <?= $history['id'] ?></p>
                             
                             <div class="mt-auto pt-4 border-t border-gray-100">
-                                <a href="play_quiz.php?id=<?= $history['id'] ?>" class="block w-full text-center bg-gray-800 text-white font-bold py-2.5 rounded-full hover:bg-[#b829e3] transition shadow-md">
+                                <a href="/play_quiz?id=<?= $history['id'] ?>" class="block w-full text-center bg-gray-800 text-white font-bold py-2.5 rounded-full hover:bg-[#b829e3] transition shadow-md">
                                     Play Again ➔
                                 </a>
                             </div>
@@ -201,7 +201,7 @@
                 <h2 class="text-3xl font-extrabold text-gray-800 tracking-tight mb-2">Host a Game</h2>
                 <p class="text-gray-500 font-medium">Share your Game PIN below with other players.</p>
             </div>
-            <a href="create_class.php" class="bg-gray-800 text-white px-6 py-2.5 rounded-full font-semibold shadow-md hover:bg-[#b829e3] hover:-translate-y-1 transition-all flex items-center gap-2">
+            <a href="/class/create" class="bg-gray-800 text-white px-6 py-2.5 rounded-full font-semibold shadow-md hover:bg-[#b829e3] hover:-translate-y-1 transition-all flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
                 Create New Game
             </a>
