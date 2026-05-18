@@ -96,10 +96,16 @@ class AuthController {
             $stmt->bindParam(':input', $loginInput);
             $stmt->execute();
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
             if ($user && password_verify($password, $user['password'])) {
                 
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['email'] = $user['email']; 
+                
+                // ⚠️ TAMBAHKAN 2 BARIS INI AGAR AVATAR & WARNA LANGSUNG TERBACA SEJAK AWAL LOGIN ⚠️
+                $_SESSION['avatar'] = $user['avatar']; 
+                $_SESSION['theme_color'] = $user['theme_color']; 
+
                 header("Location: /"); 
                 exit();
 
