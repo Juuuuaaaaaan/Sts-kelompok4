@@ -7,6 +7,15 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
+    ::-webkit-scrollbar {
+        display: none;
+    }
+
+    html, body {
+        -ms-overflow-style: none; 
+        scrollbar-width: none;  
+    }
+
         body { font-family: 'Outfit', sans-serif; }
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
@@ -89,13 +98,13 @@
         </div>
     </nav>
 
-    <?php if (in_array($msg, ['deleted', 'history_deleted', 'history_cleared'])) : ?>
+    <?php if (in_array($msg, ['deleted', 'class_deleted', 'history_deleted', 'history_cleared'])) : ?>
         <?php
             $alertText = "";
             $alertIcon = "";
             $bgClass = "";
             
-            if ($msg === 'deleted') {
+            if ($msg === 'deleted' || $msg === 'class_deleted') {
                 $alertText = "Class successfully deleted.";
                 $alertIcon = "✅";
                 $bgClass = "bg-green-100 border-green-400 text-green-700";
@@ -133,7 +142,7 @@
                 <h1 class="text-4xl font-black text-gray-800 mb-2">Join Game</h1>
                 <p class="text-gray-500 font-medium mb-8">Enter the Game PIN provided by your host.</p>
                 
-                <form action="join_class.php" method="POST" class="flex flex-col gap-4">
+                <form action="/join_class" method="POST" class="flex flex-col gap-4">
                     <input type="text" name="class_pin" placeholder="Game PIN" required autocomplete="off"
                            class="w-full text-center text-3xl font-black tracking-widest text-gray-800 placeholder-gray-300 bg-gray-50 border-4 border-gray-200 rounded-2xl py-5 focus:outline-none focus:border-[#b829e3] focus:bg-white transition-all <?= ($msg == 'invalid' || $msg == 'played') ? 'border-red-400 bg-red-50 shake-animation' : '' ?>">
                     <button type="submit" class="w-full bg-[#b829e3] hover:bg-[#9b1ebf] text-white font-black text-2xl py-5 rounded-2xl shadow-[0_6px_0_#8519a3] hover:shadow-[0_2px_0_#8519a3] hover:translate-y-1 transition-all">
@@ -182,7 +191,7 @@
                             <p class="text-gray-400 text-xs mb-4">PIN: <?= $history['id'] ?></p>
                             
                             <div class="mt-auto pt-4 border-t border-gray-100">
-                                <a href="play_quiz.php?id=<?= $history['id'] ?>" class="block w-full text-center bg-gray-800 text-white font-bold py-2.5 rounded-full hover:bg-[#b829e3] transition shadow-md">
+                                <a href="/play_quiz?id=<?= $history['id'] ?>" class="block w-full text-center bg-gray-800 text-white font-bold py-2.5 rounded-full hover:bg-[#b829e3] transition shadow-md">
                                     Play Again ➔
                                 </a>
                             </div>
@@ -203,7 +212,7 @@
                 <h2 class="text-3xl font-extrabold text-gray-800 tracking-tight mb-2">Host a Game</h2>
                 <p class="text-gray-500 font-medium">Share your Game PIN below with other players.</p>
             </div>
-            <a href="create_class.php" class="bg-gray-800 text-white px-6 py-2.5 rounded-full font-semibold shadow-md hover:bg-[#b829e3] hover:-translate-y-1 transition-all flex items-center gap-2">
+            <a href="/class/create" class="bg-gray-800 text-white px-6 py-2.5 rounded-full font-semibold shadow-md hover:bg-[#b829e3] hover:-translate-y-1 transition-all flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
                 Create New Game
             </a>
@@ -241,21 +250,25 @@
         </div>
     </div>
 
-    <div id="dynamicModal" class="fixed inset-0 z-[100] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
-        <div class="absolute inset-0 bg-gray-900/40 backdrop-blur-sm" onclick="closeModal()"></div>
+    <div id="dynamicModal" class="fixed inset-0 z-[9999] flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 w-screen h-screen">
+        
+        <div class="fixed inset-0 backdrop-blur-sm w-screen h-screen" onclick="closeModal()"></div>
+        
         <div id="modalBox" class="bg-white rounded-[2rem] p-8 shadow-2xl max-w-sm w-full mx-4 relative z-10 transform scale-95 transition-transform duration-300 text-center border-4 border-red-50">
             <div class="w-20 h-20 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-5 shadow-inner">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
             </div>
             <h3 id="modalTitle" class="text-2xl font-black text-gray-800 mb-2">Confirm</h3>
-            <p id="modalDesc" class="text-gray-500 font-medium mb-8 text-sm px-2">Are you sure you want to delete this class?</p>
+            <p id="modalDesc" class="text-gray-500 font-medium mb-8 text-sm px-2">Are you sure you want to delete this?</p>
             <div class="flex gap-3">
                 <button onclick="closeModal()" class="flex-1 bg-gray-100 text-gray-600 font-bold py-3.5 rounded-full hover:bg-gray-200 transition-colors">Cancel</button>
                 <a id="confirmActionBtn" href="#" class="flex-1 bg-red-500 text-white font-bold py-3.5 rounded-full hover:bg-red-600 transition-colors shadow-lg shadow-red-200 flex items-center justify-center gap-2">Delete</a>
             </div>
         </div>
     </div>
-
+    
     <script>
         function openModal(type, id) {
             const modal = document.getElementById('dynamicModal');
@@ -264,29 +277,51 @@
             const title = document.getElementById('modalTitle');
             const desc = document.getElementById('modalDesc');
 
+            // 1. Menentukan rute berdasarkan tombol yang diklik
             if (type === 'delete_class') {
                 title.innerText = 'Delete Class?';
                 desc.innerHTML = 'All questions within it will <strong class="text-red-500">permanently disappear</strong> for all players.';
-                confirmBtn.href = `delete_class.php?id=${id}`;
+                confirmBtn.href = `/delete_class?id=${id}`;
             } else if (type === 'delete_history') {
                 title.innerText = 'Delete History?';
                 desc.innerHTML = 'This game history will be removed from your account.';
-                confirmBtn.href = `delete_history.php?id=${id}`;
+                confirmBtn.href = `/delete_history?id=${id}`;
             } else if (type === 'clear_all_history') {
                 title.innerText = 'Clear All History?';
                 desc.innerHTML = 'All your game history will be <strong class="text-red-500">permanently deleted</strong>.';
-                confirmBtn.href = `delete_history.php?action=clear_all`;
+                confirmBtn.href = `/clear_history`;
             }
 
+            // 2. TRIK JITU: Hitung posisi scroll layar aktif user saat ini
+            const currentScroll = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
+            const screenCenter = currentScroll + (window.innerHeight / 2);
+
+            // 3. Pasang posisi modal secara absolut tepat di tengah layar yang sedang dibuka
+            modal.style.top = `${screenCenter}px`;
+            modal.style.transform = 'translateY(-50%)';
+
+            // 4. Munculkan modal dengan animasi scale
             modal.classList.remove('opacity-0', 'pointer-events-none');
             modalBox.classList.remove('scale-95');
             modalBox.classList.add('scale-100');
+
+            // 5. Kunci scroll latar belakang total agar tidak bisa digeser saat popup aktif
+            document.body.style.overflow = 'hidden';
+            document.documentElement.style.overflow = 'hidden';
         }
 
         function closeModal() {
-            document.getElementById('dynamicModal').classList.add('opacity-0', 'pointer-events-none');
-            document.getElementById('modalBox').classList.remove('scale-100');
-            document.getElementById('modalBox').classList.add('scale-95');
+            const modal = document.getElementById('dynamicModal');
+            const modalBox = document.getElementById('modalBox');
+
+            // Sembunyikan modal
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modalBox.classList.remove('scale-100');
+            modalBox.classList.add('scale-95');
+
+            // Kembalikan fungsi scroll halaman menjadi normal kembali
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
         }
     </script>
 

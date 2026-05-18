@@ -12,7 +12,20 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<<<<<<< HEAD
     <style>
+=======
+<style>
+    ::-webkit-scrollbar {
+        display: none;
+    }
+
+    html, body {
+        -ms-overflow-style: none;  
+        scrollbar-width: none; 
+    }
+
+>>>>>>> 516051f65c20032ff4ce2543cea40d5eb47477e5
         body {
             animation: slideInPage 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }

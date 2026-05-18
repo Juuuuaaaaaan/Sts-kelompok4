@@ -1,43 +1,9 @@
-<?php
-session_start();
-require_once '../core/Database.php';
-
-if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
-    exit();
-}
-
-$class_id = isset($_GET['id']) ? $_GET['id'] : null;
-
-if (!$class_id) {
-    header("Location: class.php");
-    exit();
-}
-
-try {
-    $stmt_class = $pdo->prepare("SELECT * FROM classes WHERE id = ?");
-    $stmt_class->execute([$class_id]);
-    $class = $stmt_class->fetch(PDO::FETCH_ASSOC);
-
-    if (!$class) {
-        die("Kelas tidak ditemukan.");
-    }
-
-    $stmt_questions = $pdo->prepare("SELECT * FROM questions WHERE class_id = ?");
-    $stmt_questions->execute([$class_id]);
-    $questions = $stmt_questions->fetchAll(PDO::FETCH_ASSOC);
-
-} catch (PDOException $e) {
-    die("Error Database: " . $e->getMessage());
-}
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Playing: <?= htmlspecialchars($class['nama_kelas']) ?></title>
+    <title>Playing: <?= htmlspecialchars($class['nama_kelas'] ?? 'Quiz') ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
@@ -104,7 +70,7 @@ try {
             Fun<br>Streak
         </div>
         
-        <a href="class.php" class="text-lg font-medium flex items-center hover:opacity-80 transition-opacity">
+        <a href="/class" class="text-lg font-medium flex items-center hover:opacity-80 transition-opacity">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
@@ -114,9 +80,9 @@ try {
 
     <main class="flex-grow flex flex-col items-center justify-center p-4 relative z-10 w-full max-w-6xl mx-auto -mt-10">
         
-        <?php if (count($questions) > 0) : ?>
-        <form id="quiz-form" action="submit_quiz.php" method="POST" class="w-full relative">
-            <input type="hidden" name="class_id" value="<?= $class_id ?>">
+        <?php if (isset($questions) && count($questions) > 0) : ?>
+        <form id="quiz-form" action="/play_quiz" method="POST" class="w-full relative">
+            <input type="hidden" name="class_id" value="<?= htmlspecialchars($class_id ?? '') ?>">
 
             <?php foreach ($questions as $index => $q) : ?>
                 <div id="q-block-<?= $index ?>" class="w-full flex flex-col items-center <?= $index === 0 ? '' : 'hidden-question' ?>">
@@ -150,36 +116,53 @@ try {
 
                     </div>
 
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 w-full max-w-5xl">
+                    <?php if (isset($q['question_type']) && $q['question_type'] === 'isian'): ?>
                         
-                        <?php 
-                        $options = [
-                            'A' => $q['option_a'],
-                            'B' => $q['option_b'],
-                            'C' => $q['option_c'],
-                            'D' => $q['option_d']
-                        ];
-                        foreach ($options as $key => $val) : 
-                        ?>
-                            <label class="option-btn relative cursor-pointer block h-32 md:h-48 group">
-                                <input type="radio" name="answer[<?= $q['id'] ?>]" value="<?= $key ?>" class="hidden peer" required onchange="nextQuestion(<?= $index ?>)">
-                                
-                                <div class="w-full h-full bg-[#9b1ebf] group-hover:bg-[#8519a3] rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-lg border-2 border-transparent peer-checked:border-white peer-checked:bg-[#72158c] transition-all">
-                                    <span class="text-white text-lg md:text-2xl font-semibold leading-tight px-2">
-                                        <?= htmlspecialchars($val) ?>
-                                    </span>
-                                </div>
-                            </label>
-                        <?php endforeach; ?>
+                        <div class="w-full max-w-2xl mx-auto flex flex-col items-center gap-6 mt-8">
+                            <input type="text" name="answer[<?= $q['id'] ?>]" 
+                                   class="w-full text-center text-3xl font-bold py-6 px-8 rounded-2xl border-4 border-white focus:outline-none focus:border-[#00d2ff] text-gray-800 shadow-lg" 
+                                   placeholder="Ketik jawabanmu di sini..." 
+                                   autocomplete="off">
+                                   
+                            <button type="button" onclick="nextQuestion(<?= $index ?>)" 
+                                    class="bg-white text-[#b829e3] font-black text-2xl py-4 px-16 rounded-full shadow-[0_6px_0_#e5e7eb] hover:translate-y-1 hover:shadow-[0_2px_0_#e5e7eb] transition-all">
+                                Lanjut
+                            </button>
+                        </div>
 
-                    </div>
+                    <?php else: ?>
+
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 w-full max-w-5xl mt-8">
+                            <?php 
+                            $options = [
+                                'A' => $q['option_a'],
+                                'B' => $q['option_b'],
+                                'C' => $q['option_c'],
+                                'D' => $q['option_d']
+                            ];
+                            foreach ($options as $key => $val) : 
+                            ?>
+                                <label class="option-btn relative cursor-pointer block h-32 md:h-48 group">
+                                    <input type="radio" name="answer[<?= $q['id'] ?>]" value="<?= $key ?>" class="hidden peer" onchange="nextQuestion(<?= $index ?>)">
+                                    
+                                    <div class="w-full h-full bg-[#9b1ebf] group-hover:bg-[#8519a3] rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-lg border-2 border-transparent peer-checked:border-white peer-checked:bg-[#72158c] transition-all">
+                                        <span class="text-white text-lg md:text-2xl font-semibold leading-tight px-2">
+                                            <?= htmlspecialchars($val) ?>
+                                        </span>
+                                    </div>
+                                </label>
+                            <?php endforeach; ?>
+                        </div>
+
+                    <?php endif; ?>
+
                 </div>
             <?php endforeach; ?>
         </form>
         <?php else : ?>
             <div class="bg-white p-10 rounded-2xl text-center">
                 <p class="text-gray-500 text-xl font-bold mb-4">No questions available.</p>
-                <a href="class.php" class="bg-[#b829e3] text-white px-6 py-2 rounded-full font-bold">Go Back</a>
+                <a href="/class" class="bg-[#b829e3] text-white px-6 py-2 rounded-full font-bold">Go Back</a>
             </div>
         <?php endif; ?>
 
@@ -187,7 +170,7 @@ try {
 
     <script>
         let currentQuestion = 0;
-        const totalQuestions = <?= count($questions) ?>;
+        const totalQuestions = <?= isset($questions) ? count($questions) : 0 ?>;
         let timeLeft = 30; 
         let timerInterval;
 

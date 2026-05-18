@@ -1,49 +1,3 @@
-<?php
-session_start();
-require_once '../core/Database.php';
-
-if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
-    exit();
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nama_kelas = $_POST['nama_kelas'];
-    $deskripsi = $_POST['deskripsi'];
-    $username = $_SESSION['username'];
-
-    try {
-        $pdo->beginTransaction();
-
-        $stmt = $pdo->prepare("INSERT INTO classes (nama_kelas, deskripsi, created_by) VALUES (?, ?, ?)");
-        $stmt->execute([$nama_kelas, $deskripsi, $username]);
-        
-        $class_id = $pdo->lastInsertId();
-
-        $stmt_q = $pdo->prepare("INSERT INTO questions (class_id, question_text, option_a, option_b, option_c, option_d, correct_option) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        
-        foreach ($_POST['question'] as $index => $question) {
-            $stmt_q->execute([
-                $class_id,
-                $question,
-                $_POST['option_a'][$index],
-                $_POST['option_b'][$index],
-                $_POST['option_c'][$index],
-                $_POST['option_d'][$index],
-                $_POST['correct'][$index]
-            ]);
-        }
-
-        $pdo->commit();
-        header("Location: class.php?success=Class created");
-        exit();
-    } catch (Exception $e) {
-        $pdo->rollBack();
-        die("Gagal menyimpan data: " . $e->getMessage());
-    }
-}
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -58,10 +12,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="max-w-3xl mx-auto">
         <div class="flex items-center justify-between mb-8">
             <h1 class="text-3xl font-extrabold text-gray-800">Create New Class</h1>
-            <a href="class.php" class="text-gray-500 hover:text-[#b829e3] font-bold">Cancel & Go Back</a>
+            <a href="/class" class="text-gray-500 hover:text-[#b829e3] font-bold">Cancel & Go Back</a>
         </div>
 
-        <form action="" method="POST" class="space-y-6">
+        <form action="/class" method="POST" class="space-y-6">
             <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
                 <h2 class="text-xl font-bold mb-4 text-[#b829e3]">1. Class Information</h2>
                 <input type="text" name="nama_kelas" placeholder="Class Title (e.g. Basic Math)" required class="w-full bg-gray-50 border border-gray-200 p-4 rounded-xl mb-4 font-bold text-lg focus:outline-none focus:border-[#b829e3]">
@@ -69,24 +23,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <div id="questions-container" class="space-y-6">
-                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 question-block">
-                    <h2 class="text-xl font-bold mb-4">Question 1</h2>
-                    <input type="text" name="question[]" placeholder="Type your question here..." required class="w-full bg-gray-50 border border-gray-200 p-4 rounded-xl mb-4 focus:outline-none focus:border-[#b829e3]">
-                    
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <input type="text" name="option_a[]" placeholder="Option A" required class="bg-gray-50 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-[#b829e3]">
-                        <input type="text" name="option_b[]" placeholder="Option B" required class="bg-gray-50 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-[#b829e3]">
-                        <input type="text" name="option_c[]" placeholder="Option C" required class="bg-gray-50 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-[#b829e3]">
-                        <input type="text" name="option_d[]" placeholder="Option D" required class="bg-gray-50 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-[#b829e3]">
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 question-block transition-all duration-300">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold">Question 1</h2>
                     </div>
 
-                    <label class="font-bold text-gray-600 block mb-2">Select Correct Answer:</label>
-                    <select name="correct[]" class="bg-gray-50 border border-gray-200 p-3 rounded-xl w-full focus:outline-none focus:border-[#b829e3]">
-                        <option value="A">Option A</option>
-                        <option value="B">Option B</option>
-                        <option value="C">Option C</option>
-                        <option value="D">Option D</option>
-                    </select>
+                    <div class="mb-4">
+                        <label class="font-bold text-gray-600 block mb-2">Tipe Soal:</label>
+                        <select name="type[]" onchange="toggleType(this)" class="bg-purple-50 text-[#b829e3] font-bold border border-purple-200 p-3 rounded-xl focus:outline-none w-full max-w-xs cursor-pointer">
+                            <option value="pg">Pilihan Ganda (A, B, C, D)</option>
+                            <option value="isian">Isian Singkat</option>
+                        </select>
+                    </div>
+                    
+                    <input type="text" name="question[]" placeholder="Ketik pertanyaan di sini..." required class="w-full bg-gray-50 border border-gray-200 p-4 rounded-xl mb-4 focus:outline-none focus:border-[#b829e3]">
+                    
+                    <input type="hidden" name="correct[]" class="real-correct-answer" value="A">
+                    
+                    <div class="pg-section">
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <input type="text" name="option_a[]" placeholder="Opsi A" class="bg-gray-50 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-[#b829e3]">
+                            <input type="text" name="option_b[]" placeholder="Opsi B" class="bg-gray-50 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-[#b829e3]">
+                            <input type="text" name="option_c[]" placeholder="Opsi C" class="bg-gray-50 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-[#b829e3]">
+                            <input type="text" name="option_d[]" placeholder="Opsi D" class="bg-gray-50 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-[#b829e3]">
+                        </div>
+                        <label class="font-bold text-gray-600 block mb-2">Pilih Jawaban Benar:</label>
+                        <select onchange="updateCorrectAnswer(this)" class="pg-select bg-gray-50 border border-gray-200 p-3 rounded-xl w-full focus:outline-none focus:border-[#b829e3] cursor-pointer">
+                            <option value="A">Opsi A</option>
+                            <option value="B">Opsi B</option>
+                            <option value="C">Opsi C</option>
+                            <option value="D">Opsi D</option>
+                        </select>
+                    </div>
+
+                    <div class="isian-section" style="display:none;">
+                        <label class="font-bold text-gray-600 block mb-2">Kunci Jawaban Benar:</label>
+                        <input type="text" placeholder="Ketik jawaban benar di sini..." onkeyup="updateCorrectAnswer(this)" onchange="updateCorrectAnswer(this)" class="isian-input w-full bg-green-50 border border-green-200 p-4 rounded-xl focus:outline-none focus:border-green-500 font-bold text-green-700">
+                        <p class="text-sm text-gray-400 mt-2">*Siswa harus mengetikkan jawaban persis seperti ini agar dianggap benar.</p>
+                    </div>
                 </div>
             </div>
 
@@ -102,48 +76,99 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <script>
-        let questionCount = 1;
+        // Logika Mengubah Tipe Soal
+        function toggleType(selectElement) {
+            const block = selectElement.closest('.question-block');
+            const pgSection = block.querySelector('.pg-section');
+            const isianSection = block.querySelector('.isian-section');
+            const hiddenCorrect = block.querySelector('.real-correct-answer');
+
+            if (selectElement.value === 'pg') {
+                pgSection.style.display = 'block';
+                isianSection.style.display = 'none';
+                hiddenCorrect.value = pgSection.querySelector('.pg-select').value;
+            } else {
+                pgSection.style.display = 'none';
+                isianSection.style.display = 'block';
+                hiddenCorrect.value = isianSection.querySelector('.isian-input').value;
+            }
+        }
+
+        // Menyinkronkan Jawaban ke Input Tersembunyi
+        function updateCorrectAnswer(inputElement) {
+            const block = inputElement.closest('.question-block');
+            const hiddenCorrect = block.querySelector('.real-correct-answer');
+            hiddenCorrect.value = inputElement.value;
+        }
+
+        // Update Penomoran Soal
+        function updateQuestionNumbers() {
+            const blocks = document.querySelectorAll('.question-block');
+            blocks.forEach((block, index) => {
+                const title = block.querySelector('h2');
+                if (title) title.innerText = `Question ${index + 1}`;
+            });
+        }
+
+        // Tambah Soal Baru
         function addQuestion() {
-            questionCount++;
             const container = document.getElementById('questions-container');
             const newQuestion = `
-                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 mt-6 question-block">
-                    <h2 class="text-xl font-bold mb-4">Question ${questionCount}</h2>
-                    <input type="text" name="question[]" placeholder="Type your question here..." required class="w-full bg-gray-50 border border-gray-200 p-4 rounded-xl mb-4 focus:outline-none focus:border-[#b829e3]">
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <input type="text" name="option_a[]" placeholder="Option A" required class="bg-gray-50 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-[#b829e3]">
-                        <input type="text" name="option_b[]" placeholder="Option B" required class="bg-gray-50 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-[#b829e3]">
-                        <input type="text" name="option_c[]" placeholder="Option C" required class="bg-gray-50 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-[#b829e3]">
-                        <input type="text" name="option_d[]" placeholder="Option D" required class="bg-gray-50 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-[#b829e3]">
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 mt-6 question-block transition-all duration-300">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold">Question</h2>
+                        <button type="button" onclick="removeQuestion(this)" class="text-red-500 hover:text-red-700 font-bold bg-red-50 hover:bg-red-100 px-4 py-2 rounded-full transition-colors flex items-center gap-2">
+                            <span>Hapus Soal</span> 🗑️
+                        </button>
                     </div>
-                    <label class="font-bold text-gray-600 block mb-2">Select Correct Answer:</label>
-                    <select name="correct[]" class="bg-gray-50 border border-gray-200 p-3 rounded-xl w-full focus:outline-none focus:border-[#b829e3]">
-                        <option value="A">Option A</option>
-                        <option value="B">Option B</option>
-                        <option value="C">Option C</option>
-                        <option value="D">Option D</option>
-                    </select>
+
+                    <div class="mb-4">
+                        <label class="font-bold text-gray-600 block mb-2">Tipe Soal:</label>
+                        <select name="type[]" onchange="toggleType(this)" class="bg-purple-50 text-[#b829e3] font-bold border border-purple-200 p-3 rounded-xl focus:outline-none w-full max-w-xs cursor-pointer">
+                            <option value="pg">Pilihan Ganda (A, B, C, D)</option>
+                            <option value="isian">Isian Singkat</option>
+                        </select>
+                    </div>
+                    
+                    <input type="text" name="question[]" placeholder="Ketik pertanyaan di sini..." required class="w-full bg-gray-50 border border-gray-200 p-4 rounded-xl mb-4 focus:outline-none focus:border-[#b829e3]">
+                    
+                    <input type="hidden" name="correct[]" class="real-correct-answer" value="A">
+                    
+                    <div class="pg-section">
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <input type="text" name="option_a[]" placeholder="Opsi A" class="bg-gray-50 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-[#b829e3]">
+                            <input type="text" name="option_b[]" placeholder="Opsi B" class="bg-gray-50 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-[#b829e3]">
+                            <input type="text" name="option_c[]" placeholder="Opsi C" class="bg-gray-50 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-[#b829e3]">
+                            <input type="text" name="option_d[]" placeholder="Opsi D" class="bg-gray-50 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-[#b829e3]">
+                        </div>
+                        <label class="font-bold text-gray-600 block mb-2">Pilih Jawaban Benar:</label>
+                        <select onchange="updateCorrectAnswer(this)" class="pg-select bg-gray-50 border border-gray-200 p-3 rounded-xl w-full focus:outline-none focus:border-[#b829e3] cursor-pointer">
+                            <option value="A">Opsi A</option>
+                            <option value="B">Opsi B</option>
+                            <option value="C">Opsi C</option>
+                            <option value="D">Opsi D</option>
+                        </select>
+                    </div>
+
+                    <div class="isian-section" style="display:none;">
+                        <label class="font-bold text-gray-600 block mb-2">Kunci Jawaban Benar:</label>
+                        <input type="text" placeholder="Ketik jawaban benar di sini..." onkeyup="updateCorrectAnswer(this)" onchange="updateCorrectAnswer(this)" class="isian-input w-full bg-green-50 border border-green-200 p-4 rounded-xl focus:outline-none focus:border-green-500 font-bold text-green-700">
+                        <p class="text-sm text-gray-400 mt-2">*Siswa harus mengetikkan jawaban persis seperti ini agar dianggap benar.</p>
+                    </div>
                 </div>
             `;
             container.insertAdjacentHTML('beforeend', newQuestion);
+            updateQuestionNumbers();
         }
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const links = document.querySelectorAll('a');
-            links.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    if (this.hostname === window.location.hostname && this.target !== '_blank' && !this.getAttribute('href').startsWith('#')) {
-                        e.preventDefault();
-                        const destination = this.href;
-                        document.body.classList.add('page-exit');
-                        setTimeout(() => {
-                            window.location.href = destination;
-                        }, 400);
-                    }
-                });
-            });
-        });
+
+        // Hapus Soal
+        function removeQuestion(button) {
+            const questionBlock = button.closest('.question-block');
+            if (questionBlock) {
+                questionBlock.remove();
+                updateQuestionNumbers();
+            }
+        }
     </script>
 </body>
 </html>
