@@ -21,6 +21,12 @@ $router->add('GET', '/', 'HomeController', 'index');
 $router->add('GET', '/profile', 'ProfileController', 'index'); 
 $router->add('GET', '/streak', 'StreakController', 'index'); 
 $router->add('GET', '/play_quiz', 'QuizController', 'play');
+$router->add('POST', '/play_quiz', 'QuizController', 'submit');
+$router->add('GET', '/quiz_result', 'QuizController', 'result');
+
+$router->add('GET', '/clear_history', 'ClassController', 'clearHistory');
+$router->add('GET', '/delete_history', 'ClassController', 'deleteHistory');
+$router->add('GET', '/delete_class', 'ClassController', 'deleteClass');
 
 $router->add('GET', '/class', 'ClassController', 'index'); 
 $router->add('GET', '/class/create', 'ClassController', 'create');

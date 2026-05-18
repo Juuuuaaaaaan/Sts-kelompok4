@@ -13,6 +13,15 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
+    ::-webkit-scrollbar {
+        display: none;
+    }
+
+    html, body {
+        -ms-overflow-style: none;  
+        scrollbar-width: none; 
+    }
+
         body {
             animation: slideInPage 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
