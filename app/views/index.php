@@ -14,7 +14,7 @@ if (session_status() === PHP_SESSION_NONE) {
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <style>
-    body {
+        body {
             animation: slideInPage 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
         
@@ -65,8 +65,8 @@ if (session_status() === PHP_SESSION_NONE) {
 <body class="bg-white min-h-screen flex flex-col font-['Outfit'] relative overflow-x-hidden">
 
     <?php $current_page = basename($_SERVER['PHP_SELF']); ?>
-<?php $current_page = basename($_SERVER['PHP_SELF']); ?>
-    <nav class="flex items-center w-full p-6 bg-white/95 backdrop-blur-sm shadow-sm z-30 sticky top-0">
+    
+    <nav class="flex items-center w-full px-8 py-5 bg-white/95 backdrop-blur-sm shadow-sm z-30 sticky top-0">
         
         <div class="flex-1 flex justify-start">
             <a href="/" class="text-3xl font-bold text-[#b829e3] tracking-wide cursor-pointer hover:scale-105 transition-transform duration-300">Fun Streak</a>
@@ -89,8 +89,8 @@ if (session_status() === PHP_SESSION_NONE) {
 
         <div class="flex-1 flex justify-end items-center gap-4">
             <?php if (isset($_SESSION['username'])): ?>
-                <a href="/profile" class="h-10 w-10 rounded-full bg-purple-200 hover:bg-purple-300 hover:scale-105 flex items-center justify-center text-[#b829e3] font-bold text-xl uppercase shadow-sm transition-all duration-300 cursor-pointer" title="Go to Profile">
-                    <?= substr($_SESSION['username'], 0, 1) ?>
+                <a href="/profile" class="h-11 w-11 rounded-full <?= htmlspecialchars($_SESSION['theme_color'] ?? 'bg-[#b829e3]') ?> hover:scale-105 flex items-center justify-center text-xl shadow-sm transition-all duration-300 cursor-pointer border-2 border-white overflow-hidden" title="Go to Profile">
+                    <?= htmlspecialchars($_SESSION['avatar'] ?? '🧑‍💻') ?>
                 </a>
             <?php else: ?>
                 <a href="/login" class="text-[#b829e3] font-bold hover:text-[#9b1ebf] px-4 py-2 transition-colors duration-300">Log In</a>
