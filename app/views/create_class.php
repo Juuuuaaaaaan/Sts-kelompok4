@@ -76,7 +76,7 @@
     </div>
 
     <script>
-        // Logika Mengubah Tipe Soal
+       
         function toggleType(selectElement) {
             const block = selectElement.closest('.question-block');
             const pgSection = block.querySelector('.pg-section');
@@ -94,14 +94,14 @@
             }
         }
 
-        // Menyinkronkan Jawaban ke Input Tersembunyi
+        
         function updateCorrectAnswer(inputElement) {
             const block = inputElement.closest('.question-block');
             const hiddenCorrect = block.querySelector('.real-correct-answer');
             hiddenCorrect.value = inputElement.value;
         }
 
-        // Update Penomoran Soal
+        
         function updateQuestionNumbers() {
             const blocks = document.querySelectorAll('.question-block');
             blocks.forEach((block, index) => {
@@ -110,7 +110,7 @@
             });
         }
 
-        // Tambah Soal Baru
+        
         function addQuestion() {
             const container = document.getElementById('questions-container');
             const newQuestion = `
@@ -161,7 +161,7 @@
             updateQuestionNumbers();
         }
 
-        // Hapus Soal
+        
         function removeQuestion(button) {
             const questionBlock = button.closest('.question-block');
             if (questionBlock) {

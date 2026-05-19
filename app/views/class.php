@@ -59,7 +59,7 @@
 <body class="bg-[#f3f4f6] min-h-screen flex flex-col relative">
 
     <?php 
-        // Mengambil path URL saat ini (contoh: '/', '/class', atau '/streak')
+       
         $current_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); 
     ?>
     
@@ -277,7 +277,7 @@
             const title = document.getElementById('modalTitle');
             const desc = document.getElementById('modalDesc');
 
-            // 1. Menentukan rute berdasarkan tombol yang diklik
+            
             if (type === 'delete_class') {
                 title.innerText = 'Delete Class?';
                 desc.innerHTML = 'All questions within it will <strong class="text-red-500">permanently disappear</strong> for all players.';
@@ -292,20 +292,20 @@
                 confirmBtn.href = `/clear_history`;
             }
 
-            // 2. TRIK JITU: Hitung posisi scroll layar aktif user saat ini
+            
             const currentScroll = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
             const screenCenter = currentScroll + (window.innerHeight / 2);
 
-            // 3. Pasang posisi modal secara absolut tepat di tengah layar yang sedang dibuka
+            
             modal.style.top = `${screenCenter}px`;
             modal.style.transform = 'translateY(-50%)';
 
-            // 4. Munculkan modal dengan animasi scale
+            
             modal.classList.remove('opacity-0', 'pointer-events-none');
             modalBox.classList.remove('scale-95');
             modalBox.classList.add('scale-100');
 
-            // 5. Kunci scroll latar belakang total agar tidak bisa digeser saat popup aktif
+            
             document.body.style.overflow = 'hidden';
             document.documentElement.style.overflow = 'hidden';
         }
@@ -314,12 +314,12 @@
             const modal = document.getElementById('dynamicModal');
             const modalBox = document.getElementById('modalBox');
 
-            // Sembunyikan modal
+            
             modal.classList.add('opacity-0', 'pointer-events-none');
             modalBox.classList.remove('scale-100');
             modalBox.classList.add('scale-95');
 
-            // Kembalikan fungsi scroll halaman menjadi normal kembali
+            
             document.body.style.overflow = '';
             document.documentElement.style.overflow = '';
         }

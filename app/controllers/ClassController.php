@@ -21,7 +21,7 @@ class ClassController {
         }
     }
 
-    // 1. Menampilkan Halaman Utama Kelas & History
+   
     public function index() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -52,12 +52,12 @@ class ClassController {
         require_once __DIR__ . '/../views/class.php';
     }
 
-    // 2. Menampilkan Form Buat Kelas Baru
+   
     public function create() {
         require_once __DIR__ . '/../views/create_class.php';
     }
 
-    // 3. Menyimpan Kelas Baru dan Soal-soalnya (PG & Isian)
+  
     public function store() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -75,12 +75,12 @@ class ClassController {
             try {
                 $this->db->beginTransaction();
 
-                // Insert ke tabel classes
+                
                 $stmt = $this->db->prepare("INSERT INTO classes (nama_kelas, deskripsi, created_by) VALUES (?, ?, ?)");
                 $stmt->execute([$nama_kelas, $deskripsi, $username]);
                 $class_id = $this->db->lastInsertId();
 
-                // Insert soal-soal ke tabel questions
+                
                 if (isset($_POST['question']) && is_array($_POST['question'])) {
                     $stmt_q = $this->db->prepare("INSERT INTO questions (class_id, question_type, question_text, option_a, option_b, option_c, option_d, correct_option) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
                     
@@ -118,7 +118,7 @@ class ClassController {
         }
     }
 
-    // 4. Menampilkan Form Edit Kelas
+   
     public function edit($id) {
         $stmt = $this->db->prepare("SELECT * FROM classes WHERE id = :id");
         $stmt->bindParam(':id', $id);
@@ -133,7 +133,7 @@ class ClassController {
         require_once __DIR__ . '/../views/classes/edit.php';
     }
 
-    // 5. Memproses Update data kelas
+  
     public function update($id) {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'PUT') {
             $nama_kelas = $_POST['nama_kelas'];
@@ -153,7 +153,7 @@ class ClassController {
         }
     }
 
-    // 6. Menghapus kelas standar (melalui form/method lama)
+    
     public function destroy($id) {
         $stmt = $this->db->prepare("DELETE FROM classes WHERE id = :id");
         $stmt->bindParam(':id', $id);
@@ -166,7 +166,7 @@ class ClassController {
         }
     }
 
-    // 7. Mengubah status kelas user menjadi complete
+  
     public function complete($id) {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -189,7 +189,7 @@ class ClassController {
         }
     }
 
-    // 8. Menampilkan Halaman Join Class
+    
     public function join() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -203,7 +203,7 @@ class ClassController {
         require_once __DIR__ . '/../views/join_class.php';
     }
 
-    // 9. Memproses Input Game PIN / Join Class
+  
     public function processJoin() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -242,11 +242,7 @@ class ClassController {
         }
     }
 
-    // =========================================================
-    // FUNGSI MVC: HAPUS HISTORY (SEMUA / SATUAN) & HAPUS KELAS Cascading
-    // =========================================================
-
-    // 10. Fungsi Mengosongkan Seluruh Riwayat Kuis User
+   
     public function clearHistory() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -259,11 +255,11 @@ class ClassController {
         }
 
         try {
-            // Hapus semua riwayat kuis milik user yang sedang login
+           
             $stmt = $this->db->prepare("DELETE FROM completed_classes WHERE username = ?");
             $stmt->execute([$username]);
             
-            // Mereset akumulasi poin user kembali ke 0 di tabel users
+          
             $stmt_user = $this->db->prepare("UPDATE users SET points = 0 WHERE username = ?");
             $stmt_user->execute([$username]);
 
@@ -274,7 +270,7 @@ class ClassController {
         }
     }
 
-    // 11. Fungsi Menghapus SATU Baris Riwayat Kuis Tertentu (Tombol X)
+    
     public function deleteHistory() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -299,7 +295,7 @@ class ClassController {
         }
     }
 
-    // 12. Fungsi Menghapus Kelas Beserta Soal & Riwayatnya (Cascading Delete)
+   
     public function deleteClass() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();

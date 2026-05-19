@@ -158,7 +158,7 @@ $current_bio = $current_bio ?? '';
     </div>
 
     <script>
-        // SCRIPT GANTI NAMA
+        
         function toggleNameEdit() {
             const displayArea = document.getElementById('display-name-area');
             const formArea = document.getElementById('edit-name-form');
@@ -176,7 +176,7 @@ $current_bio = $current_bio ?? '';
             }
         }
 
-        // SCRIPT UNTUK LIVE PREVIEW
+        
         document.addEventListener('DOMContentLoaded', () => {
             const previewAvatarBox = document.getElementById('preview-avatar');
             const avatarRadios = document.querySelectorAll('.avatar-radio');
