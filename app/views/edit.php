@@ -46,7 +46,7 @@
                     <?php if (!empty($questions)): ?>
                         <?php foreach ($questions as $index => $q): ?>
                             <div class="question-block bg-gray-50 p-6 rounded-2xl border border-gray-200 relative">
-                                <button type="button" onclick="removeQuestion(this)" class="absolute top-4 right-4 text-red-500 hover:text-red-700 font-bold text-sm bg-red-50 hover:bg-red-100 px-3 py-1 rounded-lg transition-all">Remove</button>
+                                <button type="button" onclick="removeQuestion(this)" class="absolute top-4 right-4 text-red-500 hover:text-red-700 font-bold text-sm bg-red-50 hover:bg-red-100 px-3 py-1 rounded-lg transition-all">Remove Question🗑️</button>
                                 <p class="font-extrabold text-gray-700 mb-4 question-number">Question #<?= $index + 1 ?></p>
                                 
                                 <div class="mb-4">

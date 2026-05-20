@@ -33,14 +33,14 @@
                     </div>
 
                     <div class="mb-4">
-                        <label class="font-bold text-gray-600 block mb-2">Tipe Soal:</label>
+                        <label class="font-bold text-gray-600 block mb-2">Question Type:</label>
                         <select name="type[]" onchange="toggleType(this)" class="bg-purple-50 text-[#b829e3] font-bold border border-purple-200 p-3 rounded-xl focus:outline-none w-full max-w-xs cursor-pointer">
-                            <option value="pg">Pilihan Ganda (A, B, C, D)</option>
-                            <option value="isian">Isian Singkat</option>
+                            <option value="pg">Multiple Choice (A, B, C, D)</option>
+                            <option value="isian">Short Answer</option>
                         </select>
                     </div>
                     
-                    <input type="text" name="question[]" placeholder="Ketik pertanyaan di sini..." required class="w-full bg-gray-50 border border-gray-200 p-4 rounded-xl mb-4 focus:outline-none focus:border-[#b829e3]">
+                    <input type="text" name="question[]" placeholder="Type your question here..." required class="w-full bg-gray-50 border border-gray-200 p-4 rounded-xl mb-4 focus:outline-none focus:border-[#b829e3]">
                     
                     <input type="hidden" name="correct[]" class="real-correct-answer" value="A">
                     
@@ -51,19 +51,19 @@
                             <input type="text" name="option_c[]" placeholder="Opsi C" class="bg-gray-50 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-[#b829e3]">
                             <input type="text" name="option_d[]" placeholder="Opsi D" class="bg-gray-50 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-[#b829e3]">
                         </div>
-                        <label class="font-bold text-gray-600 block mb-2">Pilih Jawaban Benar:</label>
+                        <label class="font-bold text-gray-600 block mb-2">Select Correct Answer</label>
                         <select onchange="updateCorrectAnswer(this)" class="pg-select bg-gray-50 border border-gray-200 p-3 rounded-xl w-full focus:outline-none focus:border-[#b829e3] cursor-pointer">
-                            <option value="A">Opsi A</option>
-                            <option value="B">Opsi B</option>
-                            <option value="C">Opsi C</option>
-                            <option value="D">Opsi D</option>
+                            <option value="A">Option A</option>
+                            <option value="B">Option B</option>
+                            <option value="C">Option C</option>
+                            <option value="D">Option D</option>
                         </select>
                     </div>
 
                     <div class="isian-section" style="display:none;">
-                        <label class="font-bold text-gray-600 block mb-2">Kunci Jawaban Benar:</label>
-                        <input type="text" placeholder="Ketik jawaban benar di sini..." onkeyup="updateCorrectAnswer(this)" onchange="updateCorrectAnswer(this)" class="isian-input w-full bg-green-50 border border-green-200 p-4 rounded-xl focus:outline-none focus:border-green-500 font-bold text-green-700">
-                        <p class="text-sm text-gray-400 mt-2">*Siswa harus mengetikkan jawaban persis seperti ini agar dianggap benar.</p>
+                        <label class="font-bold text-gray-600 block mb-2">Correct Answer Key:</label>
+                        <input type="text" placeholder="Type the correct answer here..." onkeyup="updateCorrectAnswer(this)" onchange="updateCorrectAnswer(this)" class="isian-input w-full bg-green-50 border border-green-200 p-4 rounded-xl focus:outline-none focus:border-green-500 font-bold text-green-700">
+                        <p class="text-sm text-gray-400 mt-2">*Students must type the answer exactly as shown to be considered correct.</p>
                     </div>
                 </div>
             </div>
@@ -119,28 +119,28 @@
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-xl font-bold">Question</h2>
                         <button type="button" onclick="removeQuestion(this)" class="text-red-500 hover:text-red-700 font-bold bg-red-50 hover:bg-red-100 px-4 py-2 rounded-full transition-colors flex items-center gap-2">
-                            <span>Hapus Soal</span> 🗑️
+                            <span>Remove Question</span> 🗑️
                         </button>
                     </div>
 
                     <div class="mb-4">
-                        <label class="font-bold text-gray-600 block mb-2">Tipe Soal:</label>
+                        <label class="font-bold text-gray-600 block mb-2">Question Type:</label>
                         <select name="type[]" onchange="toggleType(this)" class="bg-purple-50 text-[#b829e3] font-bold border border-purple-200 p-3 rounded-xl focus:outline-none w-full max-w-xs cursor-pointer">
-                            <option value="pg">Pilihan Ganda (A, B, C, D)</option>
-                            <option value="isian">Isian Singkat</option>
+                            <option value="pg">Multiple Choice (A, B, C, D)</option>
+                            <option value="isian">Short Answer</option>
                         </select>
                     </div>
                     
-                    <input type="text" name="question[]" placeholder="Ketik pertanyaan di sini..." required class="w-full bg-gray-50 border border-gray-200 p-4 rounded-xl mb-4 focus:outline-none focus:border-[#b829e3]">
+                    <input type="text" name="question[]" placeholder="Type your question here..." required class="w-full bg-gray-50 border border-gray-200 p-4 rounded-xl mb-4 focus:outline-none focus:border-[#b829e3]">
                     
                     <input type="hidden" name="correct[]" class="real-correct-answer" value="A">
                     
                     <div class="pg-section">
                         <div class="grid grid-cols-2 gap-4 mb-4">
-                            <input type="text" name="option_a[]" placeholder="Opsi A" class="bg-gray-50 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-[#b829e3]">
-                            <input type="text" name="option_b[]" placeholder="Opsi B" class="bg-gray-50 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-[#b829e3]">
-                            <input type="text" name="option_c[]" placeholder="Opsi C" class="bg-gray-50 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-[#b829e3]">
-                            <input type="text" name="option_d[]" placeholder="Opsi D" class="bg-gray-50 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-[#b829e3]">
+                            <input type="text" name="option_a[]" placeholder="Option A" class="bg-gray-50 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-[#b829e3]">
+                            <input type="text" name="option_b[]" placeholder="Option B" class="bg-gray-50 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-[#b829e3]">
+                            <input type="text" name="option_c[]" placeholder="Option C" class="bg-gray-50 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-[#b829e3]">
+                            <input type="text" name="option_d[]" placeholder="Option D" class="bg-gray-50 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-[#b829e3]">
                         </div>
                         <label class="font-bold text-gray-600 block mb-2">Pilih Jawaban Benar:</label>
                         <select onchange="updateCorrectAnswer(this)" class="pg-select bg-gray-50 border border-gray-200 p-3 rounded-xl w-full focus:outline-none focus:border-[#b829e3] cursor-pointer">
@@ -152,9 +152,9 @@
                     </div>
 
                     <div class="isian-section" style="display:none;">
-                        <label class="font-bold text-gray-600 block mb-2">Kunci Jawaban Benar:</label>
-                        <input type="text" placeholder="Ketik jawaban benar di sini..." onkeyup="updateCorrectAnswer(this)" onchange="updateCorrectAnswer(this)" class="isian-input w-full bg-green-50 border border-green-200 p-4 rounded-xl focus:outline-none focus:border-green-500 font-bold text-green-700">
-                        <p class="text-sm text-gray-400 mt-2">*Siswa harus mengetikkan jawaban persis seperti ini agar dianggap benar.</p>
+                        <label class="font-bold text-gray-600 block mb-2">Correct Answer Key:</label>
+                        <input type="text" placeholder="Type the correct answer here..." onkeyup="updateCorrectAnswer(this)" onchange="updateCorrectAnswer(this)" class="isian-input w-full bg-green-50 border border-green-200 p-4 rounded-xl focus:outline-none focus:border-green-500 font-bold text-green-700">
+                        <p class="text-sm text-gray-400 mt-2">*Students must type the answer exactly as shown to be considered correct.</p>
                     </div>
                 </div>
             `;
