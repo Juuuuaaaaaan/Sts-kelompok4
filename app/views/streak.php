@@ -12,16 +12,15 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+    ::-webkit-scrollbar {
+        display: none;
+    }
 
-    <style>
-        ::-webkit-scrollbar {
-            display: none;
-        }
-
-        html, body {
-            -ms-overflow-style: none;  
-            scrollbar-width: none; 
-        }
+    html, body {
+        -ms-overflow-style: none;  
+        scrollbar-width: none; 
+    }
 
         body {
             animation: slideInPage 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
@@ -56,17 +55,17 @@
 </head>
 <body class="bg-[#f9f9f9] min-h-screen flex flex-col font-['Outfit']">
 
-    <?php 
+<?php 
+        // Mengambil path URL saat ini (contoh: '/', '/class', atau '/streak')
         $current_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); 
     ?>
-    
-    <nav class="flex items-center w-full px-8 py-5 bg-white shadow-sm z-10 sticky top-0">
+    <nav class="flex items-center p-6 bg-white shadow-sm z-10 sticky top-0 w-full">
         
-        <div class="flex-1 flex justify-start">
+        <div class="flex-1">
             <a href="/" class="text-3xl font-bold text-[#b829e3] tracking-wide cursor-pointer hover:scale-105 transition-transform duration-300 inline-block">Fun Streak</a>
         </div>
         
-        <div class="flex justify-center gap-10 text-gray-500 font-semibold items-center text-lg hidden md:flex">
+        <div class="flex gap-10 text-gray-500 font-semibold items-center text-lg hidden md:flex">
             <a href="/" class="relative group <?= ($current_path == '/' || $current_path == '/index.php') ? 'text-[#b829e3]' : 'hover:text-[#b829e3]' ?> transition-colors duration-300">
                 Home
                 <span class="absolute -bottom-1 left-0 h-[3px] rounded-full bg-[#b829e3] transition-all duration-300 <?= ($current_path == '/' || $current_path == '/index.php') ? 'w-full' : 'w-0 group-hover:w-full' ?>"></span>
@@ -84,14 +83,9 @@
         </div>
 
         <div class="flex-1 flex justify-end items-center gap-4">
-            <?php if (isset($_SESSION['username'])): ?>
-                <a href="/profile" class="h-11 w-11 rounded-full <?= htmlspecialchars($_SESSION['theme_color'] ?? 'bg-[#b829e3]') ?> hover:scale-105 flex items-center justify-center text-xl shadow-sm transition-all duration-300 cursor-pointer border-2 border-white overflow-hidden" title="Go to Profile">
-                    <?= htmlspecialchars($_SESSION['avatar'] ?? '🧑‍💻') ?>
-                </a>
-            <?php else: ?>
-                <a href="/login" class="text-[#b829e3] font-bold hover:text-[#9b1ebf] px-4 py-2 transition-colors duration-300">Log In</a>
-                <a href="/register" class="bg-[#b829e3] hover:bg-[#9b1ebf] text-white px-8 py-2.5 rounded-full font-bold shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">Sign Up</a>
-            <?php endif; ?>
+            <a href="/profile" class="h-11 w-11 rounded-full <?= htmlspecialchars($_SESSION['theme_color'] ?? 'bg-[#b829e3]') ?> hover:scale-105 flex items-center justify-center text-xl shadow-sm transition-all duration-300 cursor-pointer border-2 border-white overflow-hidden" title="Go to Profile">
+                <?= htmlspecialchars($_SESSION['avatar'] ?? '🧑‍💻') ?>
+            </a>
         </div>
     </nav>
 
@@ -108,8 +102,7 @@
             
             <div class="md:col-span-2 bg-white rounded-3xl p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-transparent hover:border-purple-100 hover:-translate-y-2 hover:shadow-[0_15px_40px_rgba(184,41,227,0.1)] transition-all duration-300 flex flex-col justify-center items-center text-center group">
                 
-                <img src="mdi_fire.png" alt="Streak Fire" class="w-24 h-24 mb-4 group-hover:scale-110 transition-transform duration-300 object-contain">
-                
+                <div class="text-6xl mb-4 group-hover:scale-110 transition-transform duration-300">🏆</div>
                 <p class="text-gray-400 font-bold tracking-widest uppercase text-sm mb-2">Total Score</p>
                 
                 <h2 class="text-7xl md:text-8xl font-black text-[#b829e3] mb-6 tracking-tighter">
@@ -117,7 +110,7 @@
                 </h2>
                 
                 <div class="inline-flex items-center bg-purple-50 text-[#b829e3] px-6 py-2.5 rounded-full text-sm font-bold border border-purple-100">
-                    <img src="mdi_fire.png" alt="Fire Icon" class="w-5 h-5 mr-2 object-contain"> Level <?= $level ?> Explorer
+                    <span class="mr-2 text-lg">🔥</span> Level <?= $level ?> Explorer
                 </div>
 
             </div>
@@ -156,7 +149,7 @@
         </div>
     </div>
 
-    <script>
+<script>
         document.addEventListener('DOMContentLoaded', () => {
             const links = document.querySelectorAll('a');
             links.forEach(link => {

@@ -21,7 +21,7 @@ class ClassController {
         }
     }
 
-   
+    // 1. Menampilkan Halaman Utama Kelas & History
     public function index() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -52,16 +52,17 @@ class ClassController {
         require_once __DIR__ . '/../views/class.php';
     }
 
-   
+    // 2. Menampilkan Form Buat Kelas Baru
     public function create() {
         require_once __DIR__ . '/../views/create_class.php';
     }
 
-  
+    // 3. Memproses pembuatan kelas baru & menyimpan soal (POST /class)
     public function store() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
+
         if (!isset($_SESSION['username'])) {
             header("Location: /login");
             exit;
@@ -69,33 +70,153 @@ class ClassController {
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $nama_kelas = $_POST['nama_kelas'];
-            $deskripsi = $_POST['deskripsi'];
-            $username = $_SESSION['username'];
+            $deskripsi  = $_POST['deskripsi'];
+            $created_by = $_SESSION['username']; 
+
+            // Generate Random PIN 6-Digit
+            $class_pin = rand(100000, 999999);
 
             try {
                 $this->db->beginTransaction();
 
-                
-                $stmt = $this->db->prepare("INSERT INTO classes (nama_kelas, deskripsi, created_by) VALUES (?, ?, ?)");
-                $stmt->execute([$nama_kelas, $deskripsi, $username]);
-                $class_id = $this->db->lastInsertId();
+                // Simpan data Kelas ke tabel 'classes'
+                $queryClass = "INSERT INTO classes (id, nama_kelas, deskripsi, created_by) VALUES (?, ?, ?, ?)";
+                $stmtClass = $this->db->prepare($queryClass);
+                $stmtClass->execute([$class_pin, $nama_kelas, $deskripsi, $created_by]);
 
+                // Siapkan query untuk soal-soal
+                $queryQuestion = "INSERT INTO questions (class_id, question_type, question_text, option_a, option_b, option_c, option_d, correct_option) 
+                                  VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                $stmtQuestion = $this->db->prepare($queryQuestion);
+
+                $types     = $_POST['type'] ?? [];
+                $questions = $_POST['question'] ?? [];
+                $corrects  = $_POST['correct'] ?? [];
+
+                // Looping untuk menyimpan setiap soal
+                for ($i = 0; $i < count($questions); $i++) {
+                    $q_type    = $types[$i] ?? 'pg';
+                    $q_text    = $questions[$i];
+                    $q_correct = $corrects[$i] ?? '';
+
+                    // FIX BUG: Mengganti $index menjadi $i agar sesuai dengan indeks looping item form
+                    $opt_a = ($q_type === 'pg' && isset($_POST['option_a'][$i]) && $_POST['option_a'][$i] !== '') ? $_POST['option_a'][$i] : '';
+                    $opt_b = ($q_type === 'pg' && isset($_POST['option_b'][$i]) && $_POST['option_b'][$i] !== '') ? $_POST['option_b'][$i] : '';
+                    $opt_c = ($q_type === 'pg' && isset($_POST['option_c'][$i]) && $_POST['option_c'][$i] !== '') ? $_POST['option_c'][$i] : '';
+                    $opt_d = ($q_type === 'pg' && isset($_POST['option_d'][$i]) && $_POST['option_d'][$i] !== '') ? $_POST['option_d'][$i] : '';
+
+                    $stmtQuestion->execute([
+                        $class_pin, 
+                        $q_type, 
+                        $q_text, 
+                        $opt_a, 
+                        $opt_b, 
+                        $opt_c, 
+                        $opt_d, 
+                        $q_correct
+                    ]);
+                }
+
+                $this->db->commit();
                 
+                header("Location: /class?msg=class_created&pin=" . $class_pin);
+                exit;
+
+            } catch (PDOException $e) {
+                $this->db->rollBack();
+                die("Gagal menyimpan data: " . $e->getMessage());
+            }
+        }
+    }
+
+/// 4. Menampilkan Form Edit Kelas beserta Pertanyaannya
+    public function edit($id = null) {
+        // Logika Pintar: Cek parameter kueri (?id=) terlebih dahulu, baru cek segmen URL murni berupa angka
+        if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+            $id = $_GET['id'];
+        }
+
+        if (!$id) {
+            $segments = explode('/', trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/'));
+            foreach ($segments as $segment) {
+                if (is_numeric($segment)) {
+                    $id = $segment;
+                    break;
+                }
+            }
+        }
+
+        $stmt = $this->db->prepare("SELECT * FROM classes WHERE id = :id");
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        $class = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$class) {
+            echo "Data kelas tidak ditemukan! ID yang terbaca adalah: " . htmlspecialchars($id ?? 'KOSONG');
+            exit;
+        }
+
+        // AMBIL JUGA PERTANYAAN YANG TERIKAT DENGAN KELAS INI UNTUK DITAMPILKAN DI VIEW
+        $stmt_q = $this->db->prepare("SELECT * FROM questions WHERE class_id = :id");
+        $stmt_q->bindParam(':id', $id);
+        $stmt_q->execute();
+        $questions = $stmt_q->fetchAll(PDO::FETCH_ASSOC);
+
+        require_once __DIR__ . '/../views/edit.php';
+    }
+
+ // 5. Memproses Update data kelas beserta Soal-soalnya
+    public function update($id = null) {
+        // Ambil ID dari input hidden POST form edit
+        $id = $_POST['class_id'] ?? $id;
+
+        if (!$id) {
+            $segments = explode('/', trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/'));
+            foreach ($segments as $segment) {
+                if (is_numeric($segment)) {
+                    $id = $segment;
+                    break;
+                }
+            }
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $nama_kelas = $_POST['nama_kelas'];
+            $deskripsi = $_POST['deskripsi'];
+
+            try {
+                $this->db->beginTransaction();
+
+                // Update data utama kelas
+                $stmt = $this->db->prepare("UPDATE classes SET nama_kelas = :nama_kelas, deskripsi = :deskripsi WHERE id = :id");
+                $stmt->bindParam(':nama_kelas', $nama_kelas);
+                $stmt->bindParam(':deskripsi', $deskripsi);
+                $stmt->bindParam(':id', $id);
+                $stmt->execute();
+
+                // Hapus pertanyaan lama agar bisa digantikan dengan data hasil edit terbaru
+                $stmt_delete = $this->db->prepare("DELETE FROM questions WHERE class_id = :id");
+                $stmt_delete->bindParam(':id', $id);
+                $stmt_delete->execute();
+
+                // Masukkan kembali soal-soal hasil editing
                 if (isset($_POST['question']) && is_array($_POST['question'])) {
                     $stmt_q = $this->db->prepare("INSERT INTO questions (class_id, question_type, question_text, option_a, option_b, option_c, option_d, correct_option) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
                     
                     foreach ($_POST['question'] as $index => $question) {
-                        $q_type = $_POST['type'][$index]; 
+                        if (trim($question) === '') continue; 
+
+                        $q_type = $_POST['type'][$index] ?? 'pg'; 
                         
-                        $opt_a = ($q_type === 'pg') ? $_POST['option_a'][$index] : '';
-                        $opt_b = ($q_type === 'pg') ? $_POST['option_b'][$index] : '';
-                        $opt_c = ($q_type === 'pg') ? $_POST['option_c'][$index] : '';
-                        $opt_d = ($q_type === 'pg') ? $_POST['option_d'][$index] : '';
+                        $opt_a = ($q_type === 'pg') ? ($_POST['option_a'][$index] ?? '') : '';
+                        $opt_b = ($q_type === 'pg') ? ($_POST['option_b'][$index] ?? '') : '';
+                        $opt_c = ($q_type === 'pg') ? ($_POST['option_c'][$index] ?? '') : '';
+                        $opt_d = ($q_type === 'pg') ? ($_POST['option_d'][$index] ?? '') : '';
                         
-                        $correct = $_POST['correct'][$index];
+                        $correct = $_POST['correct'][$index] ?? '';
 
                         $stmt_q->execute([
-                            $class_id,
+                            $id,
                             $q_type,
                             $question,
                             $opt_a,
@@ -109,52 +230,29 @@ class ClassController {
 
                 $this->db->commit();
                 header("Location: /class");
-                exit();
+                exit;
                 
             } catch (PDOException $e) {
                 $this->db->rollBack();
-                echo "<script>alert('Gagal menyimpan data: " . addslashes($e->getMessage()) . "'); window.history.back();</script>";
+                echo "<script>alert('Gagal mengupdate kelas: " . addslashes($e->getMessage()) . "'); window.history.back();</script>";
             }
         }
     }
 
-   
-    public function edit($id) {
-        $stmt = $this->db->prepare("SELECT * FROM classes WHERE id = :id");
-        $stmt->bindParam(':id', $id);
-        $stmt->execute();
-        $class = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$class) {
-            echo "Data kelas tidak ditemukan!";
-            exit;
-        }
-
-        require_once __DIR__ . '/../views/classes/edit.php';
-    }
-
-  
-    public function update($id) {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'PUT') {
-            $nama_kelas = $_POST['nama_kelas'];
-            $deskripsi = $_POST['deskripsi'];
-
-            $stmt = $this->db->prepare("UPDATE classes SET nama_kelas = :nama_kelas, deskripsi = :deskripsi WHERE id = :id");
-            $stmt->bindParam(':nama_kelas', $nama_kelas);
-            $stmt->bindParam(':deskripsi', $deskripsi);
-            $stmt->bindParam(':id', $id);
-            
-            if ($stmt->execute()) {
-                header("Location: /class");
-                exit;
-            } else {
-                echo "<script>alert('Gagal mengupdate kelas!'); window.history.back();</script>";
+    // 6. Menghapus kelas (Method DELETE / Form)
+    public function destroy($id = null) {
+        // FIX BUG: Hanya ambil segmen URL yang berupa angka murni (PIN Kelas)
+        if (!$id) {
+            $segments = explode('/', trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/'));
+            foreach ($segments as $segment) {
+                if (is_numeric($segment)) {
+                    $id = $segment;
+                    break;
+                }
             }
+            if (!$id) { $id = $_GET['id'] ?? null; }
         }
-    }
 
-    
-    public function destroy($id) {
         $stmt = $this->db->prepare("DELETE FROM classes WHERE id = :id");
         $stmt->bindParam(':id', $id);
         
@@ -166,8 +264,19 @@ class ClassController {
         }
     }
 
-  
-    public function complete($id) {
+    // 7. Mengubah status kelas user menjadi complete
+    public function complete($id = null) {
+        // FIX BUG: Hanya ambil segmen URL yang berupa angka murni (PIN Kelas)
+        if (!$id) {
+            $segments = explode('/', trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/'));
+            foreach ($segments as $segment) {
+                if (is_numeric($segment)) {
+                    $id = $segment;
+                    break;
+                }
+            }
+        }
+
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
@@ -189,60 +298,7 @@ class ClassController {
         }
     }
 
-    
-    public function join() {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        if (!isset($_SESSION['username'])) {
-            header("Location: /login");
-            exit;
-        }
-
-        require_once __DIR__ . '/../views/join_class.php';
-    }
-
-  
-    public function processJoin() {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        if (!isset($_SESSION['username'])) {
-            header("Location: /login");
-            exit;
-        }
-
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $class_id = $_POST['class_pin'] ?? null; 
-            $username = $_SESSION['username'];
-
-            if ($class_id) {
-                try {
-                    $cek_kelas = $this->db->prepare("SELECT id FROM classes WHERE id = ?");
-                    $cek_kelas->execute([$class_id]);
-                    
-                    if (!$cek_kelas->fetch()) {
-                        echo "<script>alert('Oops! Game PIN tidak ditemukan. Coba cek lagi kodenya ya!'); window.history.back();</script>";
-                        exit;
-                    }
-
-                    $stmt = $this->db->prepare("INSERT INTO user_classes (username, class_id, status) VALUES (?, ?, 'in_progress')");
-                    $stmt->execute([$username, $class_id]);
-
-                    header("Location: /play_quiz?id=" . $class_id);
-                    exit;
-                } catch (PDOException $e) {
-                    echo "<script>alert('Error dari Database: " . addslashes($e->getMessage()) . "'); window.history.back();</script>";
-                }
-            } else {
-                echo "<script>alert('Game PIN tidak boleh kosong!'); window.history.back();</script>";
-            }
-        }
-    }
-
-   
+    // 10. Fungsi Mengosongkan Seluruh Riwayat Kuis User
     public function clearHistory() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -255,11 +311,9 @@ class ClassController {
         }
 
         try {
-           
             $stmt = $this->db->prepare("DELETE FROM completed_classes WHERE username = ?");
             $stmt->execute([$username]);
             
-          
             $stmt_user = $this->db->prepare("UPDATE users SET points = 0 WHERE username = ?");
             $stmt_user->execute([$username]);
 
@@ -270,7 +324,7 @@ class ClassController {
         }
     }
 
-    
+    // 11. Fungsi Menghapus SATU Baris Riwayat Kuis Tertentu
     public function deleteHistory() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -295,7 +349,7 @@ class ClassController {
         }
     }
 
-   
+    // 12. Fungsi Menghapus Kelas Beserta Soal & Riwayatnya (Cascading Delete)
     public function deleteClass() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -315,15 +369,12 @@ class ClassController {
         try {
             $this->db->beginTransaction();
 
-            // A. Hapus semua soal (questions) yang terikat dengan kelas ini
             $stmt_questions = $this->db->prepare("DELETE FROM questions WHERE class_id = ?");
             $stmt_questions->execute([$class_id]);
 
-            // B. Hapus semua riwayat nilai (completed_classes) dari kelas ini
             $stmt_completed = $this->db->prepare("DELETE FROM completed_classes WHERE class_id = ?");
             $stmt_completed->execute([$class_id]);
 
-            // C. Hapus data kelas dari tabel classes
             $stmt_class = $this->db->prepare("DELETE FROM classes WHERE id = ?");
             $stmt_class->execute([$class_id]);
 
@@ -333,6 +384,67 @@ class ClassController {
         } catch (PDOException $e) {
             $this->db->rollBack();
             die("Gagal menghapus kelas: " . $e->getMessage());
+        }
+    }
+
+    // ==========================================
+    // FITUR JOIN KELAS
+    // ==========================================
+
+    // 8. Menampilkan Halaman Form Join Class
+    public function join() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (!isset($_SESSION['username'])) {
+            header("Location: /login");
+            exit;
+        }
+
+        // Memanggil tampilan form join kelas
+        require_once __DIR__ . '/../views/join_class.php';
+    }
+
+    // 9. Memproses Input PIN untuk Bergabung ke Kelas
+    public function processJoin() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (!isset($_SESSION['username'])) {
+            header("Location: /login");
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Mengambil input PIN dari form (biasanya input name="pin" atau "class_id")
+            $pin = $_POST['pin'] ?? $_POST['class_id'] ?? '';
+
+            if (empty(trim($pin))) {
+                echo "<script>alert('PIN Kelas tidak boleh kosong!'); window.history.back();</script>";
+                exit;
+            }
+
+            try {
+                // Cek apakah kelas dengan PIN (ID) tersebut ada di database
+                $stmt = $this->db->prepare("SELECT id FROM classes WHERE id = :id");
+                $stmt->bindParam(':id', $pin);
+                $stmt->execute();
+                $class = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                if ($class) {
+                    // Jika PIN valid & kelas ditemukan, arahkan user ke halaman pengerjaan kuis
+                    header("Location: /play_quiz?id=" . $pin);
+                    exit;
+                } else {
+                    // Jika PIN salah / tidak ditemukan
+                    echo "<script>alert('PIN salah atau kelas tidak ditemukan!'); window.history.back();</script>";
+                    exit;
+                }
+            } catch (PDOException $e) {
+                die("Error Database saat join kelas: " . $e->getMessage());
+            }
         }
     }
 }

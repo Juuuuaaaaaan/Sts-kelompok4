@@ -219,7 +219,24 @@
         if (totalQuestions > 0) {
             startTimer(0);
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizForm = document.getElementById('quiz-form');
+            if (quizForm) {
+                quizForm.addEventListener('keydown', function(e) {
+                    // Jika menekan tombol Enter pada elemen INPUT text
+                    if (e.key === 'Enter' && e.target.tagName === 'INPUT') {
+                        e.preventDefault(); // Matikan fitur submit otomatis browser
+                        
+                        // Alihkan agar otomatis memicu fungsi lanjut ke soal berikutnya
+                        nextQuestion(currentQuestion);
+                    }
+                });
+            }
+        });
+
     </script>
+    
 <script>
         document.addEventListener('DOMContentLoaded', () => {
             const links = document.querySelectorAll('a');

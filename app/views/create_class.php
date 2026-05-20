@@ -5,7 +5,11 @@
     <title>Create Class - Fun Streak</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <style>body { font-family: 'Outfit', sans-serif; }</style>
+    <style>body { font-family: 'Outfit', sans-serif; }
+        ::-webkit-scrollbar {
+        display: none;
+    }
+    </style>
 </head>
 <body class="bg-[#f9f9f9] min-h-screen p-8">
 
@@ -76,7 +80,6 @@
     </div>
 
     <script>
-       
         function toggleType(selectElement) {
             const block = selectElement.closest('.question-block');
             const pgSection = block.querySelector('.pg-section');
@@ -94,14 +97,12 @@
             }
         }
 
-        
         function updateCorrectAnswer(inputElement) {
             const block = inputElement.closest('.question-block');
             const hiddenCorrect = block.querySelector('.real-correct-answer');
             hiddenCorrect.value = inputElement.value;
         }
 
-        
         function updateQuestionNumbers() {
             const blocks = document.querySelectorAll('.question-block');
             blocks.forEach((block, index) => {
@@ -110,7 +111,7 @@
             });
         }
 
-        
+
         function addQuestion() {
             const container = document.getElementById('questions-container');
             const newQuestion = `
@@ -161,7 +162,6 @@
             updateQuestionNumbers();
         }
 
-        
         function removeQuestion(button) {
             const questionBlock = button.closest('.question-block');
             if (questionBlock) {

@@ -24,7 +24,7 @@
         }
         .shake-animation { animation: shake 0.3s ease-in-out 2; }
     </style>
-    <style>
+<style>
         body {
             animation: slideInPage 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
@@ -58,18 +58,17 @@
 </head>
 <body class="bg-[#f3f4f6] min-h-screen flex flex-col relative">
 
-    <?php 
-       
+<?php 
+        // Mengambil path URL saat ini (contoh: '/', '/class', atau '/streak')
         $current_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); 
     ?>
-    
-    <nav class="flex items-center w-full px-8 py-5 bg-white shadow-sm z-10 sticky top-0">
+    <nav class="flex items-center p-6 bg-white shadow-sm z-10 sticky top-0 w-full">
         
-        <div class="flex-1 flex justify-start">
+        <div class="flex-1">
             <a href="/" class="text-3xl font-bold text-[#b829e3] tracking-wide cursor-pointer hover:scale-105 transition-transform duration-300 inline-block">Fun Streak</a>
         </div>
         
-        <div class="flex justify-center gap-10 text-gray-500 font-semibold items-center text-lg hidden md:flex">
+        <div class="flex gap-10 text-gray-500 font-semibold items-center text-lg hidden md:flex">
             <a href="/" class="relative group <?= ($current_path == '/' || $current_path == '/index.php') ? 'text-[#b829e3]' : 'hover:text-[#b829e3]' ?> transition-colors duration-300">
                 Home
                 <span class="absolute -bottom-1 left-0 h-[3px] rounded-full bg-[#b829e3] transition-all duration-300 <?= ($current_path == '/' || $current_path == '/index.php') ? 'w-full' : 'w-0 group-hover:w-full' ?>"></span>
@@ -87,14 +86,9 @@
         </div>
 
         <div class="flex-1 flex justify-end items-center gap-4">
-            <?php if (isset($_SESSION['username'])): ?>
-                <a href="/profile" class="h-11 w-11 rounded-full <?= htmlspecialchars($_SESSION['theme_color'] ?? 'bg-[#b829e3]') ?> hover:scale-105 flex items-center justify-center text-xl shadow-sm transition-all duration-300 cursor-pointer border-2 border-white overflow-hidden" title="Go to Profile">
-                    <?= htmlspecialchars($_SESSION['avatar'] ?? '🧑‍💻') ?>
-                </a>
-            <?php else: ?>
-                <a href="/login" class="text-[#b829e3] font-bold hover:text-[#9b1ebf] px-4 py-2 transition-colors duration-300">Log In</a>
-                <a href="/register" class="bg-[#b829e3] hover:bg-[#9b1ebf] text-white px-8 py-2.5 rounded-full font-bold shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">Sign Up</a>
-            <?php endif; ?>
+            <a href="/profile" class="h-11 w-11 rounded-full <?= htmlspecialchars($_SESSION['theme_color'] ?? 'bg-[#b829e3]') ?> hover:scale-105 flex items-center justify-center text-xl shadow-sm transition-all duration-300 cursor-pointer border-2 border-white overflow-hidden" title="Go to Profile">
+                <?= htmlspecialchars($_SESSION['avatar'] ?? '🧑‍💻') ?>
+            </a>
         </div>
     </nav>
 
@@ -134,7 +128,6 @@
             }, 2500);
         </script>
     <?php endif; ?>
-    
     <div class="container mx-auto px-4 py-8 max-w-6xl flex-grow flex flex-col items-center">
         
         <div class="w-full max-w-md mt-6 mb-16">
@@ -143,7 +136,7 @@
                 <p class="text-gray-500 font-medium mb-8">Enter the Game PIN provided by your host.</p>
                 
                 <form action="/join_class" method="POST" class="flex flex-col gap-4">
-                    <input type="text" name="class_pin" placeholder="Game PIN" required autocomplete="off"
+                    <input type="text" name="pin" placeholder="Game PIN" required autocomplete="off"
                            class="w-full text-center text-3xl font-black tracking-widest text-gray-800 placeholder-gray-300 bg-gray-50 border-4 border-gray-200 rounded-2xl py-5 focus:outline-none focus:border-[#b829e3] focus:bg-white transition-all <?= ($msg == 'invalid' || $msg == 'played') ? 'border-red-400 bg-red-50 shake-animation' : '' ?>">
                     <button type="submit" class="w-full bg-[#b829e3] hover:bg-[#9b1ebf] text-white font-black text-2xl py-5 rounded-2xl shadow-[0_6px_0_#8519a3] hover:shadow-[0_2px_0_#8519a3] hover:translate-y-1 transition-all">
                         Enter
@@ -239,6 +232,9 @@
                         <div class="mt-auto flex justify-between items-center pt-4 border-t border-gray-100">
                             <span class="text-gray-500 font-bold bg-gray-100 px-4 py-1.5 rounded-full text-xs">Your Creation</span>
                         </div>
+                        <a href="/class/edit?id=<?= $my_row['id'] ?>" class="bg-[#b829e3]/60 hover:bg-[#a020c0] text-white font-bold py-2 px-4 mt-5 rounded-xl text-sm transition-all shadow-sm">
+                        ✏️ Edit Class
+                        </a>
                     </div>
                 <?php endforeach; ?>
             <?php else : ?>
@@ -248,6 +244,7 @@
                 </div>
             <?php endif; ?>
         </div>
+        
     </div>
 
     <div id="dynamicModal" class="fixed inset-0 z-[9999] flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 w-screen h-screen">
@@ -277,7 +274,7 @@
             const title = document.getElementById('modalTitle');
             const desc = document.getElementById('modalDesc');
 
-            
+            // 1. Menentukan rute berdasarkan tombol yang diklik
             if (type === 'delete_class') {
                 title.innerText = 'Delete Class?';
                 desc.innerHTML = 'All questions within it will <strong class="text-red-500">permanently disappear</strong> for all players.';
@@ -292,20 +289,20 @@
                 confirmBtn.href = `/clear_history`;
             }
 
-            
+            // 2. TRIK JITU: Hitung posisi scroll layar aktif user saat ini
             const currentScroll = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
             const screenCenter = currentScroll + (window.innerHeight / 2);
 
-            
+            // 3. Pasang posisi modal secara absolut tepat di tengah layar yang sedang dibuka
             modal.style.top = `${screenCenter}px`;
             modal.style.transform = 'translateY(-50%)';
 
-            
+            // 4. Munculkan modal dengan animasi scale
             modal.classList.remove('opacity-0', 'pointer-events-none');
             modalBox.classList.remove('scale-95');
             modalBox.classList.add('scale-100');
 
-            
+            // 5. Kunci scroll latar belakang total agar tidak bisa digeser saat popup aktif
             document.body.style.overflow = 'hidden';
             document.documentElement.style.overflow = 'hidden';
         }
@@ -314,18 +311,18 @@
             const modal = document.getElementById('dynamicModal');
             const modalBox = document.getElementById('modalBox');
 
-            
+            // Sembunyikan modal
             modal.classList.add('opacity-0', 'pointer-events-none');
             modalBox.classList.remove('scale-100');
             modalBox.classList.add('scale-95');
 
-            
+            // Kembalikan fungsi scroll halaman menjadi normal kembali
             document.body.style.overflow = '';
             document.documentElement.style.overflow = '';
         }
     </script>
 
-    <script>
+<script>
         document.addEventListener('DOMContentLoaded', () => {
             const links = document.querySelectorAll('a');
             links.forEach(link => {

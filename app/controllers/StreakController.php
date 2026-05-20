@@ -45,12 +45,13 @@ class StreakController {
             die("Error mengambil data poin: " . $e->getMessage());
         }
 
-        $level = floor($total_points / 100) + 1;
-        $next_level_points = $level * 100;
-        $progress_percent = ($total_points % 100); 
-        if ($progress_percent == 0 && $total_points > 0) {
-            $progress_percent = 100;
-        }
+        $points_per_level = 1000; 
+
+        $level = floor($total_points / $points_per_level) + 1;
+        $next_level_points = $level * $points_per_level;
+
+        $current_level_progress = ($total_points % $points_per_level);
+        $progress_percent = ($current_level_progress / $points_per_level) * 100;
 
         require_once __DIR__ . '/../views/streak.php';
     }

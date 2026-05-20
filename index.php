@@ -28,6 +28,9 @@ $router->add('GET', '/clear_history', 'ClassController', 'clearHistory');
 $router->add('GET', '/delete_history', 'ClassController', 'deleteHistory');
 $router->add('GET', '/delete_class', 'ClassController', 'deleteClass');
 
+$router->add('GET', '/class/edit', 'ClassController', 'edit');  
+$router->add('POST', '/class/update', 'ClassController', 'update');
+
 $router->add('GET', '/class', 'ClassController', 'index'); 
 $router->add('GET', '/class/create', 'ClassController', 'create');
 $router->add('POST', '/class', 'ClassController', 'store'); 
