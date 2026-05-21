@@ -21,7 +21,7 @@ class ClassController {
         }
     }
 
-    // 1. Menampilkan Halaman Utama Kelas & History
+    
     public function index() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -52,12 +52,12 @@ class ClassController {
         require_once __DIR__ . '/../views/class.php';
     }
 
-    // 2. Menampilkan Form Buat Kelas Baru
+    
     public function create() {
         require_once __DIR__ . '/../views/create_class.php';
     }
 
-    // 3. Memproses pembuatan kelas baru & menyimpan soal (POST /class)
+    
     public function store() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -73,18 +73,18 @@ class ClassController {
             $deskripsi  = $_POST['deskripsi'];
             $created_by = $_SESSION['username']; 
 
-            // Generate Random PIN 6-Digit
+            
             $class_pin = rand(100000, 999999);
 
             try {
                 $this->db->beginTransaction();
 
-                // Simpan data Kelas ke tabel 'classes'
+                
                 $queryClass = "INSERT INTO classes (id, nama_kelas, deskripsi, created_by) VALUES (?, ?, ?, ?)";
                 $stmtClass = $this->db->prepare($queryClass);
                 $stmtClass->execute([$class_pin, $nama_kelas, $deskripsi, $created_by]);
 
-                // Siapkan query untuk soal-soal
+             
                 $queryQuestion = "INSERT INTO questions (class_id, question_type, question_text, option_a, option_b, option_c, option_d, correct_option) 
                                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
                 $stmtQuestion = $this->db->prepare($queryQuestion);
@@ -99,7 +99,7 @@ class ClassController {
                     $q_text    = $questions[$i];
                     $q_correct = $corrects[$i] ?? '';
 
-                    // FIX BUG: Mengganti $index menjadi $i agar sesuai dengan indeks looping item form
+                   
                     $opt_a = ($q_type === 'pg' && isset($_POST['option_a'][$i]) && $_POST['option_a'][$i] !== '') ? $_POST['option_a'][$i] : '';
                     $opt_b = ($q_type === 'pg' && isset($_POST['option_b'][$i]) && $_POST['option_b'][$i] !== '') ? $_POST['option_b'][$i] : '';
                     $opt_c = ($q_type === 'pg' && isset($_POST['option_c'][$i]) && $_POST['option_c'][$i] !== '') ? $_POST['option_c'][$i] : '';
@@ -129,9 +129,9 @@ class ClassController {
         }
     }
 
-/// 4. Menampilkan Form Edit Kelas beserta Pertanyaannya
+
     public function edit($id = null) {
-        // Logika Pintar: Cek parameter kueri (?id=) terlebih dahulu, baru cek segmen URL murni berupa angka
+       
         if (isset($_GET['id']) && is_numeric($_GET['id'])) {
             $id = $_GET['id'];
         }
@@ -156,7 +156,7 @@ class ClassController {
             exit;
         }
 
-        // AMBIL JUGA PERTANYAAN YANG TERIKAT DENGAN KELAS INI UNTUK DITAMPILKAN DI VIEW
+      
         $stmt_q = $this->db->prepare("SELECT * FROM questions WHERE class_id = :id");
         $stmt_q->bindParam(':id', $id);
         $stmt_q->execute();
@@ -165,7 +165,7 @@ class ClassController {
         require_once __DIR__ . '/../views/edit.php';
     }
 
- // 5. Memproses Update data kelas beserta Soal-soalnya
+ 
     public function update($id = null) {
         // Ambil ID dari input hidden POST form edit
         $id = $_POST['class_id'] ?? $id;
@@ -187,19 +187,19 @@ class ClassController {
             try {
                 $this->db->beginTransaction();
 
-                // Update data utama kelas
+              
                 $stmt = $this->db->prepare("UPDATE classes SET nama_kelas = :nama_kelas, deskripsi = :deskripsi WHERE id = :id");
                 $stmt->bindParam(':nama_kelas', $nama_kelas);
                 $stmt->bindParam(':deskripsi', $deskripsi);
                 $stmt->bindParam(':id', $id);
                 $stmt->execute();
 
-                // Hapus pertanyaan lama agar bisa digantikan dengan data hasil edit terbaru
+               
                 $stmt_delete = $this->db->prepare("DELETE FROM questions WHERE class_id = :id");
                 $stmt_delete->bindParam(':id', $id);
                 $stmt_delete->execute();
 
-                // Masukkan kembali soal-soal hasil editing
+                
                 if (isset($_POST['question']) && is_array($_POST['question'])) {
                     $stmt_q = $this->db->prepare("INSERT INTO questions (class_id, question_type, question_text, option_a, option_b, option_c, option_d, correct_option) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
                     
@@ -239,9 +239,9 @@ class ClassController {
         }
     }
 
-    // 6. Menghapus kelas (Method DELETE / Form)
+  
     public function destroy($id = null) {
-        // FIX BUG: Hanya ambil segmen URL yang berupa angka murni (PIN Kelas)
+        
         if (!$id) {
             $segments = explode('/', trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/'));
             foreach ($segments as $segment) {
@@ -264,9 +264,9 @@ class ClassController {
         }
     }
 
-    // 7. Mengubah status kelas user menjadi complete
+   
     public function complete($id = null) {
-        // FIX BUG: Hanya ambil segmen URL yang berupa angka murni (PIN Kelas)
+       
         if (!$id) {
             $segments = explode('/', trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/'));
             foreach ($segments as $segment) {
@@ -298,7 +298,7 @@ class ClassController {
         }
     }
 
-    // 10. Fungsi Mengosongkan Seluruh Riwayat Kuis User
+    
     public function clearHistory() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -324,7 +324,7 @@ class ClassController {
         }
     }
 
-    // 11. Fungsi Menghapus SATU Baris Riwayat Kuis Tertentu
+   
     public function deleteHistory() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -349,7 +349,7 @@ class ClassController {
         }
     }
 
-    // 12. Fungsi Menghapus Kelas Beserta Soal & Riwayatnya (Cascading Delete)
+   
     public function deleteClass() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -387,11 +387,7 @@ class ClassController {
         }
     }
 
-    // ==========================================
-    // FITUR JOIN KELAS
-    // ==========================================
-
-    // 8. Menampilkan Halaman Form Join Class
+   
     public function join() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -402,11 +398,11 @@ class ClassController {
             exit;
         }
 
-        // Memanggil tampilan form join kelas
+       
         require_once __DIR__ . '/../views/join_class.php';
     }
 
-    // 9. Memproses Input PIN untuk Bergabung ke Kelas
+  
     public function processJoin() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -418,7 +414,7 @@ class ClassController {
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Mengambil input PIN dari form (biasanya input name="pin" atau "class_id")
+         
             $pin = $_POST['pin'] ?? $_POST['class_id'] ?? '';
 
             if (empty(trim($pin))) {
@@ -427,18 +423,18 @@ class ClassController {
             }
 
             try {
-                // Cek apakah kelas dengan PIN (ID) tersebut ada di database
+              
                 $stmt = $this->db->prepare("SELECT id FROM classes WHERE id = :id");
                 $stmt->bindParam(':id', $pin);
                 $stmt->execute();
                 $class = $stmt->fetch(PDO::FETCH_ASSOC);
 
                 if ($class) {
-                    // Jika PIN valid & kelas ditemukan, arahkan user ke halaman pengerjaan kuis
+                
                     header("Location: /play_quiz?id=" . $pin);
                     exit;
                 } else {
-                    // Jika PIN salah / tidak ditemukan
+                  
                     echo "<script>alert('PIN salah atau kelas tidak ditemukan!'); window.history.back();</script>";
                     exit;
                 }
